@@ -361,19 +361,25 @@
 
   function getBracketRoundName(roundNum, totalRounds) {
     const remaining = totalRounds - roundNum + 1;
-    
-    if (remaining === 1) return 'Finale / Finals';
-    if (remaining === 2) return 'Demi-finales / Semi-Finals';
-    if (remaining === 3) return 'Quarts de finale / Quarter-Finals';
-    if (remaining === 4) return 'Huitièmes / Round of 16';
-    
-    return `Round ${roundNum}`;
+    const t = window.i18n && window.i18n.t ? window.i18n.t.bind(window.i18n) : (k) => k;
+    if (remaining === 1) return t('bracket.finals');
+    if (remaining === 2) return t('bracket.semifinals');
+    if (remaining === 3) return t('bracket.quarterFinals');
+    if (remaining === 4) return t('bracket.roundOf16');
+    if (remaining === 5) return t('bracket.roundOf32');
+    return t('bracket.round') + ' ' + roundNum;
+  }
+
+  function getParticipantUsername(participantField) {
+    if (!participantField) return null;
+    const p = Array.isArray(participantField) ? participantField[0] : participantField;
+    return p && p.roblox_username ? p.roblox_username : null;
   }
 
   function renderBracketMatch(match) {
-    const player1Name = match.player1?.[0]?.roblox_username || 'TBD';
-    const player2Name = match.player2?.[0]?.roblox_username || 'TBD';
-    const winnerName = match.winner?.[0]?.roblox_username;
+    const player1Name = getParticipantUsername(match.player1) || 'TBD';
+    const player2Name = getParticipantUsername(match.player2) || 'TBD';
+    const winnerName = getParticipantUsername(match.winner);
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
 

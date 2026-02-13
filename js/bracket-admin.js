@@ -297,16 +297,16 @@
       return;
     }
 
-    // Get ALL seeded participants first
-    let allSeededParticipants = await getSeededParticipants(totalParticipants, seedingMethod);
+    // Get top N seeded participants (by signup order, points, or random)
+    let allSeededParticipants = await getSeededParticipants(desiredBracketSize, seedingMethod);
 
     if (!allSeededParticipants || allSeededParticipants.length === 0) {
       alert('Error generating bracket: Could not seed participants');
       return;
     }
 
-    // Take only the TOP N players
-    const topPlayers = allSeededParticipants.slice(0, desiredBracketSize);
+    // Use exactly the seeded list (already top N with seeds 1..N)
+    const topPlayers = allSeededParticipants;
     
     console.log(`Selected top ${topPlayers.length} players for bracket:`, topPlayers.map(p => p.roblox_username));
 
@@ -685,20 +685,25 @@
 
   function getRoundName(roundNum, totalRounds) {
     const remaining = totalRounds - roundNum + 1;
-    
-    if (remaining === 1) return 'Finals';
-    if (remaining === 2) return 'Semi-Finals';
-    if (remaining === 3) return 'Quarter-Finals';
-    if (remaining === 4) return 'Round of 16';
-    if (remaining === 5) return 'Round of 32';
-    
-    return `Round ${roundNum}`;
+    const t = window.i18n && window.i18n.t ? window.i18n.t.bind(window.i18n) : (k) => k;
+    if (remaining === 1) return t('bracket.finals');
+    if (remaining === 2) return t('bracket.semifinals');
+    if (remaining === 3) return t('bracket.quarterFinals');
+    if (remaining === 4) return t('bracket.roundOf16');
+    if (remaining === 5) return t('bracket.roundOf32');
+    return t('bracket.round') + ' ' + roundNum;
+  }
+
+  function getParticipantUsername(participantField) {
+    if (!participantField) return null;
+    const p = Array.isArray(participantField) ? participantField[0] : participantField;
+    return p && p.roblox_username ? p.roblox_username : null;
   }
 
   function renderMatch(match) {
-    const player1Name = match.player1?.[0]?.roblox_username || 'TBD';
-    const player2Name = match.player2?.[0]?.roblox_username || 'TBD';
-    const winnerName = match.winner?.[0]?.roblox_username;
+    const player1Name = getParticipantUsername(match.player1) || 'TBD';
+    const player2Name = getParticipantUsername(match.player2) || 'TBD';
+    const winnerName = getParticipantUsername(match.winner);
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
     const canSelect = match.player1_id && match.player2_id && !isCompleted;

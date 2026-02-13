@@ -197,7 +197,10 @@ const translations = {
       round2: "Ronde 2",
       round3: "Ronde 3",
       semifinals: "Demi-finales",
-      finals: "Finales",
+      finals: "Finale",
+      quarterFinals: "Quarts de finale",
+      roundOf16: "Huitièmes de finale",
+      roundOf32: "Trente-deuxièmes de finale",
       
       // Match Info
       matchNumber: "Match",
@@ -488,6 +491,9 @@ const translations = {
       round3: "Round 3",
       semifinals: "Semi-Finals",
       finals: "Finals",
+      quarterFinals: "Quarter-Finals",
+      roundOf16: "Round of 16",
+      roundOf32: "Round of 32",
       
       // Match Info
       matchNumber: "Match",
