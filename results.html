@@ -318,15 +318,15 @@
           return;
         }
 
-        // Load match results (points-based)
+        // Load match results (points live in scores JSONB, not a top-level column)
         const { data: matches, error: matchError } = await supabase
           .from(TABLES.MATCHES)
           .select('*')
           .eq('tournament_id', tournamentObj.id)
-          .order('points', { ascending: false });
+          .order('round_number', { ascending: true });
 
         if (matchError) {
-          console.error('Error loading matches:', error);
+          console.error('Error loading matches:', matchError);
         }
 
         // Calculate leaderboard if we have match data
