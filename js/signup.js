@@ -48,58 +48,11 @@
       return false;
     }
     
-  // Check if user exists on Roblox
-  try {
-    const exists = await checkRobloxUser(username);
-    
-    if (exists) {
-      showSuccess(successDiv, `✓ ${username} - ${window.i18n.t('common.success')}`);
-      return true;
-    } else {
-      showError(errorDiv, window.i18n.t('signup.errorUserNotFound'));
-      return false;
-    }
-  } catch (error) {
-    // CORS error or network issue - allow fallback for localhost testing
-    console.warn('Roblox API validation failed (CORS/network):', error);
-    
-    // Show warning but allow form submission
-    if (errorDiv) {
-      errorDiv.innerHTML = `⚠️ ${window.i18n.t('signup.validationWarning') || 'Cannot verify username (will work once deployed). Proceeding...'}`;
-      errorDiv.classList.remove('hidden');
-      errorDiv.style.background = '#FFF3CD';
-      errorDiv.style.color = '#856404';
-    }
-    
-    return true; // Allow submission anyway for localhost testing
-  }
+    // Show success for valid format
+    showSuccess(successDiv, `✓ ${username}`);
+    return true;
   }
   
-  // Check if Roblox user exists via API
-  async function checkRobloxUser(username) {
-    try {
-      const response = await fetch(
-        `https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(username)}&limit=10`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Roblox API error');
-      }
-      
-      const data = await response.json();
-      
-      // Check for exact match (case-insensitive)
-      const user = data.data.find(u => 
-        u.name.toLowerCase() === username.toLowerCase()
-      );
-      
-      return !!user;
-    } catch (error) {
-      console.error('Error checking Roblox user:', error);
-      throw error;
-    }
-  }
-
   // ============================================
   // FORM SUBMISSION
   // ============================================
