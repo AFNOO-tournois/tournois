@@ -4,10 +4,9 @@
 (function() {
   'use strict';
 
-  // ADMIN PASSWORD - ⚠️ CHANGE THIS IMMEDIATELY! ⚠️
-  // This password is visible in your public GitHub repo!
-  // After changing, commit the change and push to GitHub
-  const ADMIN_PASSWORD = 'tournament2026-CHANGE-ME'; // TODO: Use proper hashing in production
+  // ADMIN PASSWORD - Keep this secure!
+  // ⚠️ This is visible in public GitHub - change regularly
+  const ADMIN_PASSWORD = 'CentroFranco2026!Secure'; // TODO: Use proper hashing in production
   
   // Point values for placements (customize as needed)
   const POINT_SCALE = {
