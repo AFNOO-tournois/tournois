@@ -221,20 +221,25 @@
       }
 
       // Fetch match results for leaderboard
+      console.log('🔍 Fetching matches for tournament:', tournament);
       const { data: matches, error: matchError } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
-        .eq('tournament_id', tournamentObj.id);
+        .eq('tournament_type', tournament);
 
       if (matchError) {
-        console.error('Error fetching matches:', matchError);
+        console.error('❌ Error fetching matches:', matchError);
       }
+
+      console.log('📊 Found matches:', matches ? matches.length : 0);
 
       // Calculate leaderboard if we have results
       if (matches && matches.length > 0) {
+        console.log('✅ Displaying leaderboard with', matches.length, 'matches');
         displayLeaderboard(participants, matches);
       } else {
         // No results yet, show participant list
+        console.log('ℹ️ No matches found - showing participant list');
         displayParticipants(participants);
       }
       

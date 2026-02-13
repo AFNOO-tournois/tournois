@@ -68,7 +68,6 @@
       const { data, error } = await supabase
         .from('tournaments')
         .select('*')
-        .in('bracket_style', ['head-to-head', 'mixed'])
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -88,6 +87,11 @@
     if (!select) return;
 
     select.innerHTML = '<option value="">-- Select Tournament --</option>';
+    
+    if (tournaments.length === 0) {
+      select.innerHTML += '<option value="" disabled>No tournaments found</option>';
+      return;
+    }
     
     tournaments.forEach(t => {
       const option = document.createElement('option');
@@ -111,6 +115,25 @@
 
     currentTournament = tournaments.find(t => t.id === tournamentId);
     if (!currentTournament) return;
+
+    // Check if tournament supports brackets
+    const bracketStyle = currentTournament.bracket_style || 'scoreboard';
+    if (bracketStyle === 'scoreboard') {
+      showBracketStatus();
+      document.getElementById('bracketStatus').innerHTML = `
+        <div style="padding: 1.5rem; background: #FFF3CD; border-radius: 8px; border-left: 4px solid #FFC107;">
+          <h3 style="margin-bottom: 1rem; color: #856404;">⚠️ Scoreboard-Only Tournament</h3>
+          <p style="margin: 0; color: #856404;">
+            This tournament is set to "Scoreboard" mode. To generate elimination brackets, 
+            edit this tournament in the "Manage Tournaments" tab and change the "Bracket Style" 
+            to either "Head-to-Head" or "Mixed".
+          </p>
+        </div>
+      `;
+      document.getElementById('bracketStatus').classList.remove('hidden');
+      document.getElementById('bracketActions').classList.add('hidden');
+      return;
+    }
 
     await loadTournamentData();
     showBracketStatus();

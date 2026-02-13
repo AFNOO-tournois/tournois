@@ -478,6 +478,8 @@
   async function loadExistingResults() {
     const tournament = document.getElementById('resultsTournament').value;
     
+    console.log('🔍 Loading existing results for tournament:', tournament);
+    
     if (!tournament) {
       document.getElementById('existingResultsContainer').classList.add('hidden');
       return;
@@ -487,6 +489,7 @@
       if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
         // Demo mode - hide the section
         document.getElementById('existingResultsContainer').classList.add('hidden');
+        console.warn('⚠️ Supabase not configured - hiding existing results section');
         return;
       }
       
@@ -501,14 +504,18 @@
         .order('round_number', { ascending: true });
       
       if (error) {
-        console.error('Error loading existing results:', error);
+        console.error('❌ Error loading existing results:', error);
+        alert('Error loading results: ' + error.message);
         return;
       }
+      
+      console.log('📊 Found matches:', matches ? matches.length : 0);
       
       // Show container
       document.getElementById('existingResultsContainer').classList.remove('hidden');
       
       if (!matches || matches.length === 0) {
+        console.log('ℹ️ No results found for this tournament');
         document.getElementById('noExistingResults').classList.remove('hidden');
         document.getElementById('existingResultsBody').innerHTML = '';
         return;
