@@ -252,9 +252,11 @@
         displayParticipants(participants);
       }
       
-      // Check if tournament has bracket style and load bracket
+      // Load bracket only if this tournament uses head-to-head or mixed; otherwise clear it
       if (tournamentObj && (tournamentObj.bracket_style === 'head-to-head' || tournamentObj.bracket_style === 'mixed')) {
         await loadAndDisplayBracketTree(tournamentObj);
+      } else {
+        clearBracketSection();
       }
       
     } catch (error) {
@@ -290,12 +292,21 @@
 
       if (!data || data.length === 0) {
         console.log('No bracket generated yet for this tournament');
+        clearBracketSection();
         return;
       }
 
       displayBracketTree(data, tournament);
     } catch (error) {
       console.error('Error loading bracket:', error);
+      clearBracketSection();
+    }
+  }
+  
+  function clearBracketSection() {
+    const bracketSection = document.getElementById('bracketTreeSection');
+    if (bracketSection) {
+      bracketSection.innerHTML = '';
     }
   }
   
