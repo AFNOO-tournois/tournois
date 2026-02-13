@@ -23,6 +23,7 @@
 
   let isAuthenticated = false;
   let currentParticipants = [];
+  let adminTournaments = []; // Store tournaments for admin operations
 
   // Initialize on page load
   document.addEventListener('DOMContentLoaded', init);
@@ -84,7 +85,10 @@
   // ADMIN INTERFACE INITIALIZATION
   // ============================================
   
-  function initAdmin() {
+  async function initAdmin() {
+    // Load tournaments first for dropdown filters
+    await loadAdminTournaments();
+    
     // Set up tabs
     setupAdminTabs();
     
@@ -106,6 +110,60 @@
     // Set up bracket management
     if (window.initBracketManagement) {
       window.initBracketManagement();
+    }
+  }
+  
+  async function loadAdminTournaments() {
+    if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
+      console.warn('Supabase not configured');
+      return;
+    }
+    
+    const supabase = window.supabaseConfig.supabase;
+    
+    try {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error loading tournaments:', error);
+        return;
+      }
+      
+      adminTournaments = data || [];
+      console.log('📋 Loaded', adminTournaments.length, 'tournaments for admin');
+      populateAdminTournamentFilters();
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  function populateAdminTournamentFilters() {
+    // Update participants filter dropdown
+    const filterTournament = document.getElementById('filterTournament');
+    if (filterTournament) {
+      filterTournament.innerHTML = '<option value="all">All Tournaments</option>';
+      adminTournaments.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.id; // Use ID now
+        option.textContent = t.name_en;
+        filterTournament.appendChild(option);
+      });
+    }
+    
+    // Update results tournament dropdown
+    const resultsTournament = document.getElementById('resultsTournament');
+    if (resultsTournament) {
+      resultsTournament.innerHTML = '<option value="">-- Choose Tournament --</option>';
+      adminTournaments.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.id; // Use ID now
+        option.textContent = t.name_en;
+        resultsTournament.appendChild(option);
+      });
     }
   }
   
@@ -156,9 +214,9 @@
         .select('*')
         .order('signup_timestamp', { ascending: false });
       
-      // Apply filter
+      // Apply filter using tournament_id
       if (filterTournament !== 'all') {
-        query = query.eq('tournament_type', filterTournament);
+        query = query.eq('tournament_id', filterTournament);
       }
       
       const { data: participants, error } = await query;
@@ -289,7 +347,7 @@
       const { data: participants, error } = await supabase
         .from(TABLES.PARTICIPANTS)
         .select('*')
-        .eq('tournament_type', tournament)
+        .eq('tournament_id', tournament)
         .order('roblox_username', { ascending: true });
       
       if (error) {
@@ -427,11 +485,12 @@
       const supabase = window.supabaseConfig.supabase;
       const TABLES = window.supabaseConfig.TABLES;
       
-      // Create match record
+      // Create match record using tournament_id
       const { data: match, error: matchError } = await supabase
         .from(TABLES.MATCHES)
         .insert({
-          tournament_type: tournament,
+          tournament_id: tournament,
+          tournament_type: 'legacy', // Keep for backwards compatibility
           round_number: parseInt(round),
           match_number: 1, // For FFA, all participants in one match
           participant_ids: results.map(r => r.participantId),
@@ -496,11 +555,11 @@
       const supabase = window.supabaseConfig.supabase;
       const TABLES = window.supabaseConfig.TABLES;
       
-      // Fetch all matches for this tournament
+      // Fetch all matches for this tournament using tournament_id
       const { data: matches, error } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
-        .eq('tournament_type', tournament)
+        .eq('tournament_id', tournament)
         .order('round_number', { ascending: true });
       
       if (error) {

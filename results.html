@@ -365,12 +365,12 @@
         participantScores[match.participant_id].matchCount++;
       });
 
-      // Get participant names
+      // Get participant names using tournament_id
       const supabase = window.supabaseConfig.supabase;
       const { data: participants } = await supabase
         .from('participants')
         .select('*')
-        .eq('tournament_type', tournament.tournament_type);
+        .eq('tournament_id', tournament.id);
 
       const leaderboard = Object.entries(participantScores)
         .map(([id, score]) => {

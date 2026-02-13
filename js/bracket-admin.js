@@ -149,11 +149,11 @@
     const TABLES = window.supabaseConfig.TABLES;
 
     try {
-      // Load participants
+      // Load participants using tournament_id
       const { data: parts, error } = await supabase
         .from(TABLES.PARTICIPANTS)
         .select('*')
-        .eq('tournament_type', currentTournament.tournament_type)
+        .eq('tournament_id', currentTournament.id)
         .order('signup_timestamp', { ascending: true });
 
       if (error) {
@@ -324,11 +324,11 @@
     const TABLES = window.supabaseConfig.TABLES;
 
     try {
-      // Get all match results for this tournament
+      // Get all match results for this tournament using tournament_id
       const { data: matches, error } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
-        .eq('tournament_type', currentTournament.tournament_type);
+        .eq('tournament_id', currentTournament.id);
 
       if (error) {
         console.error('Error fetching matches for seeding:', error);
