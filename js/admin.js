@@ -479,22 +479,19 @@
         id: '1',
         roblox_username: 'ProGamer123',
         tournament_type: 'pvp',
-        signup_timestamp: new Date().toISOString(),
-        verified: true
+        signup_timestamp: new Date().toISOString()
       },
       {
         id: '2',
         roblox_username: 'NinjaWarrior',
         tournament_type: 'pvp',
-        signup_timestamp: new Date().toISOString(),
-        verified: true
+        signup_timestamp: new Date().toISOString()
       },
       {
         id: '3',
         roblox_username: 'SpeedRunner42',
         tournament_type: 'all-ages',
-        signup_timestamp: new Date().toISOString(),
-        verified: false
+        signup_timestamp: new Date().toISOString()
       }
     ];
     

@@ -138,7 +138,7 @@
       </div>
       <div class="participant-name">${escapeHtml(participant.roblox_username)}</div>
       <div class="participant-status">
-        #${number} • ${participant.verified ? '✓' : '⏳'} ${participant.verified ? window.i18n.t('common.confirmed') : window.i18n.t('bracket.statusUpcoming')}
+        #${number}
       </div>
     `;
     return card;
@@ -245,35 +245,30 @@
         id: '1',
         roblox_username: 'ProGamer123',
         tournament_type: currentTournament,
-        verified: true,
         signup_timestamp: new Date()
       },
       {
         id: '2',
         roblox_username: 'NinjaWarrior',
         tournament_type: currentTournament,
-        verified: true,
         signup_timestamp: new Date()
       },
       {
         id: '3',
         roblox_username: 'SpeedRunner42',
         tournament_type: currentTournament,
-        verified: false,
         signup_timestamp: new Date()
       },
       {
         id: '4',
         roblox_username: 'CoolPlayer99',
         tournament_type: currentTournament,
-        verified: true,
         signup_timestamp: new Date()
       },
       {
         id: '5',
         roblox_username: 'EpicGamer777',
         tournament_type: currentTournament,
-        verified: false,
         signup_timestamp: new Date()
       }
     ];

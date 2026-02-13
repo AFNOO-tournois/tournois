@@ -179,8 +179,7 @@
       .from(TABLES.PARTICIPANTS)
       .insert({
         roblox_username: formData.robloxUsername,
-        tournament_type: formData.tournament,
-        verified: false
+        tournament_type: formData.tournament
       })
       .select()
       .single();
