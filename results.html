@@ -19,6 +19,7 @@
   
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/bracket.css">
   
   <!-- Supabase Client (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -287,17 +288,260 @@
       loadResults(tournament);
     }
 
-    async function loadResults(tournament) {
+    async function loadResults(tournamentType) {
       document.getElementById('loadingState').classList.remove('hidden');
       document.getElementById('noResultsState').classList.add('hidden');
       document.getElementById('resultsContent').classList.add('hidden');
       
-      // For now, show "no results" state
-      // TODO: Implement actual results fetching from Supabase
-      setTimeout(() => {
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('noResultsState').classList.remove('hidden');
-      }, 500);
+      if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
+        showNoResults();
+        return;
+      }
+
+      const supabase = window.supabaseConfig.supabase;
+      const TABLES = window.supabaseConfig.TABLES;
+      
+      try {
+        // Get tournament object
+        const tournamentObj = tournaments.find(t => t.tournament_type === tournamentType);
+        if (!tournamentObj) {
+          showNoResults();
+          return;
+        }
+
+        // Load match results (points-based)
+        const { data: matches, error: matchError } = await supabase
+          .from(TABLES.MATCHES)
+          .select('*')
+          .eq('tournament_id', tournamentObj.id)
+          .order('points', { ascending: false });
+
+        if (matchError) {
+          console.error('Error loading matches:', error);
+        }
+
+        // Calculate leaderboard if we have match data
+        if (matches && matches.length > 0) {
+          displayScoreboardResults(matches, tournamentObj);
+        }
+
+        // If tournament has bracket style, load bracket
+        if (tournamentObj.bracket_style === 'head-to-head' || tournamentObj.bracket_style === 'mixed') {
+          await loadAndDisplayBracketOnResults(tournamentObj);
+        }
+
+        // If no results at all, show empty state
+        if ((!matches || matches.length === 0) && 
+            (tournamentObj.bracket_style !== 'head-to-head' && tournamentObj.bracket_style !== 'mixed')) {
+          showNoResults();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showNoResults();
+      }
+    }
+
+    function showNoResults() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('noResultsState').classList.remove('hidden');
+    }
+
+    async function displayScoreboardResults(matches, tournament) {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('resultsContent').classList.remove('hidden');
+
+      // Group results by participant
+      const participantScores = {};
+      
+      matches.forEach(match => {
+        if (!participantScores[match.participant_id]) {
+          participantScores[match.participant_id] = {
+            id: match.participant_id,
+            totalPoints: 0,
+            matchCount: 0
+          };
+        }
+        participantScores[match.participant_id].totalPoints += match.points || 0;
+        participantScores[match.participant_id].matchCount++;
+      });
+
+      // Get participant names
+      const supabase = window.supabaseConfig.supabase;
+      const { data: participants } = await supabase
+        .from('participants')
+        .select('*')
+        .eq('tournament_type', tournament.tournament_type);
+
+      const leaderboard = Object.entries(participantScores)
+        .map(([id, score]) => {
+          const participant = participants?.find(p => p.id === id);
+          return {
+            id,
+            username: participant?.roblox_username || 'Unknown',
+            totalPoints: score.totalPoints,
+            matchCount: score.matchCount
+          };
+        })
+        .sort((a, b) => b.totalPoints - a.totalPoints);
+
+      // Display podium (top 3)
+      if (leaderboard.length >= 1) {
+        document.getElementById('first-username').textContent = leaderboard[0].username;
+        document.getElementById('first-points').textContent = `${leaderboard[0].totalPoints} points`;
+      }
+      if (leaderboard.length >= 2) {
+        document.getElementById('second-username').textContent = leaderboard[1].username;
+        document.getElementById('second-points').textContent = `${leaderboard[1].totalPoints} points`;
+      }
+      if (leaderboard.length >= 3) {
+        document.getElementById('third-username').textContent = leaderboard[2].username;
+        document.getElementById('third-points').textContent = `${leaderboard[2].totalPoints} points`;
+      }
+
+      // Display full standings
+      const tbody = document.getElementById('standingsTableBody');
+      tbody.innerHTML = leaderboard.map((player, index) => `
+        <tr>
+          <td style="font-weight: 700;">${index + 1}</td>
+          <td style="font-weight: 600;">${escapeHtml(player.username)}</td>
+          <td>${player.matchCount}</td>
+          <td style="font-weight: 700; color: #8DC63F;">${player.totalPoints}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadAndDisplayBracketOnResults(tournament) {
+      if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
+        return;
+      }
+
+      const supabase = window.supabaseConfig.supabase;
+
+      try {
+        const { data, error } = await supabase
+          .from('bracket_matches')
+          .select(`
+            *,
+            player1:participants!bracket_matches_player1_id_fkey(roblox_username),
+            player2:participants!bracket_matches_player2_id_fkey(roblox_username),
+            winner:participants!bracket_matches_winner_id_fkey(roblox_username)
+          `)
+          .eq('tournament_id', tournament.id)
+          .order('round_number', { ascending: true })
+          .order('match_number', { ascending: true });
+
+        if (error) {
+          console.error('Error loading bracket:', error);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          console.log('No bracket generated yet');
+          return;
+        }
+
+        displayBracketOnResults(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    function displayBracketOnResults(matches) {
+      // Check if bracket section exists
+      let bracketSection = document.getElementById('bracketTreeSection');
+      
+      if (!bracketSection) {
+        // Create bracket section after results content
+        const resultsContent = document.getElementById('resultsContent');
+        bracketSection = document.createElement('div');
+        bracketSection.id = 'bracketTreeSection';
+        bracketSection.style.marginTop = '4rem';
+        resultsContent.appendChild(bracketSection);
+      }
+
+      // Group matches by round
+      const rounds = {};
+      matches.forEach(match => {
+        if (!rounds[match.round_number]) {
+          rounds[match.round_number] = [];
+        }
+        rounds[match.round_number].push(match);
+      });
+
+      const totalRounds = Object.keys(rounds).length;
+
+      let html = `
+        <h2 style="margin-bottom: 1.5rem; text-align: center; color: #005CA9;">
+          🌳 <span data-i18n="bracket.bracketTitle">Bracket d'élimination</span>
+        </h2>
+        <div class="bracket-container">
+          <div class="bracket">
+      `;
+
+      Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).forEach(roundNum => {
+        const roundMatches = rounds[roundNum];
+        const roundName = getBracketRoundName(parseInt(roundNum), totalRounds);
+
+        html += `
+          <div class="bracket-round">
+            <div class="bracket-round-title">${roundName}</div>
+        `;
+
+        roundMatches.forEach(match => {
+          html += renderBracketMatchResults(match);
+        });
+
+        html += `</div>`;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+
+      bracketSection.innerHTML = html;
+    }
+
+    function getBracketRoundName(roundNum, totalRounds) {
+      const remaining = totalRounds - roundNum + 1;
+      
+      if (remaining === 1) return 'Finale / Finals';
+      if (remaining === 2) return 'Demi-finales / Semi-Finals';
+      if (remaining === 3) return 'Quarts / Quarters';
+      if (remaining === 4) return 'Round of 16';
+      
+      return `Round ${roundNum}`;
+    }
+
+    function renderBracketMatchResults(match) {
+      const player1Name = match.player1?.[0]?.roblox_username || 'TBD';
+      const player2Name = match.player2?.[0]?.roblox_username || 'TBD';
+      const winnerName = match.winner?.[0]?.roblox_username;
+
+      const isCompleted = match.match_status === 'completed' || match.winner_id;
+
+      return `
+        <div class="bracket-match ${isCompleted ? 'completed' : ''}">
+          <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}">
+            ${match.player1_seed ? `<span class="player-seed">${match.player1_seed}</span>` : ''}
+            <span class="player-name">${player1Name}</span>
+          </div>
+          <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}">
+            ${match.player2_seed ? `<span class="player-seed">${match.player2_seed}</span>` : ''}
+            <span class="player-name">${player2Name}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     // Demo function to show results (for testing)
