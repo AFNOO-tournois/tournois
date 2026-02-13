@@ -419,12 +419,20 @@
       if (index > 0 && player.totalPoints === leaderboard[index - 1].totalPoints) {
         // Tie - same rank as previous
         player.rank = leaderboard[index - 1].rank;
-        player.isTied = true;
       } else {
         player.rank = currentRank;
-        player.isTied = false;
       }
       currentRank++;
+    });
+
+    // Mark ALL players in tied positions
+    const rankCounts = {};
+    leaderboard.forEach(player => {
+      rankCounts[player.rank] = (rankCounts[player.rank] || 0) + 1;
+    });
+    
+    leaderboard.forEach(player => {
+      player.isTied = rankCounts[player.rank] > 1;
     });
 
     // Show participants section
@@ -450,9 +458,7 @@
           </thead>
           <tbody>
             ${leaderboard.map((player, index) => {
-              const rankDisplay = player.isTied && index > 0 && player.rank === leaderboard[index - 1].rank
-                ? `T${player.rank}`
-                : player.rank;
+              const rankDisplay = player.isTied ? `T${player.rank}` : player.rank;
               
               const medalEmoji = player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : '';
               
