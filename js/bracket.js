@@ -1,4 +1,4 @@
-// Bracket Display Logic for Le Centre Franco Tournaments
+// Bracket Display Logic for AFNOO Tournaments
 // Handles real-time bracket updates and leaderboard display
 
 (function() {

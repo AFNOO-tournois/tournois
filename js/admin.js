@@ -1,4 +1,4 @@
-// Admin Panel Logic for Le Centre Franco Tournaments
+// Admin Panel Logic for AFNOO Tournaments
 // ENGLISH ONLY - Admin interface
 
 (function() {
@@ -6,7 +6,7 @@
 
   // ADMIN PASSWORD - Keep this secure!
   // ⚠️ This is visible in public GitHub - change regularly
-  const ADMIN_PASSWORD = 'CentroFranco2026!Secure'; // TODO: Use proper hashing in production
+  const ADMIN_PASSWORD = 'AFNOO2026!Secure'; // TODO: Change and use proper auth in production
   
   // Point values for placements (customize as needed)
   const POINT_SCALE = {

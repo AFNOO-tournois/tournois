@@ -1,4 +1,4 @@
-// Supabase Configuration for Le Centre Franco Tournaments
+// Supabase Configuration for AFNOO Tournaments
 // You'll need to replace these values with your actual Supabase project credentials
 
 // IMPORTANT: Get these values from your Supabase project dashboard
@@ -72,7 +72,7 @@ if (typeof window !== 'undefined') {
  * 1. Create a Supabase account at https://supabase.com (FREE)
  * 
  * 2. Create a new project:
- *    - Project name: "Le Centre Franco Tournaments"
+ *    - Project name: "AFNOO Tournaments"
  *    - Database password: (save this somewhere safe)
  *    - Region: Choose closest to Ontario, Canada
  * 

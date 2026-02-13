@@ -1,4 +1,4 @@
-// Signup Form Logic for Le Centre Franco Tournaments
+// Signup Form Logic for AFNOO Tournaments
 // Handles Roblox username validation and registration
 
 (function() {

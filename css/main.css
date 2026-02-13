@@ -1,14 +1,14 @@
 /* 
- * Le Centre Franco - Roblox Tournaments
+ * AFNOO - Tournaments
  * Main Stylesheet with Bilingual Support
  * WCAG 2.0 AA Compliant
  */
 
 /* ============================================
-   CSS VARIABLES - Le Centre Franco Brand Colors
+   CSS VARIABLES - AFNOO Brand Colors
    ============================================ */
 :root {
-  /* Le Centre Franco Official Colors */
+  /* AFNOO brand colors */
   --cf-blue-primary: #005CA9;
   --cf-green: #8DC63F;
   --cf-pink: #E6007E;

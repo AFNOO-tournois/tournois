@@ -1,4 +1,4 @@
-// Language Toggle System for Le Centre Franco Tournaments
+// Language Toggle System for AFNOO Tournaments
 // Manages FR/EN language switching
 
 // Get current language from localStorage or default to French

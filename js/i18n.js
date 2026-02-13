@@ -1,4 +1,4 @@
-// Bilingual Translation System for Le Centre Franco Roblox Tournaments
+// Bilingual Translation System for AFNOO Tournaments
 // French (FR) is the default language
 
 const translations = {
@@ -6,7 +6,7 @@ const translations = {
     // Header & Navigation
     header: {
       title: "Tournois et compétitions",
-      subtitle: "Le Centre franco",
+      subtitle: "AFNOO",
       home: "Accueil",
       register: "S'inscrire",
       brackets: "Tableaux",
@@ -17,9 +17,9 @@ const translations = {
 
     // Landing Page
     landing: {
-      welcome: "Bienvenue au Centre franco - Tournois et compétitions!",
-      tagline: "Centre franco-ontarien de ressources pédagogiques",
-      intro: "Participez à nos tournois de Roblox, Kahoot, et plus encore! Rejoignez la compétition organisée par Le Centre franco.",
+      welcome: "Bienvenue à AFNOO - Tournois et compétitions!",
+      tagline: "L'Association des francophones du Nord-Ouest de l'Ontario",
+      intro: "Participez à nos tournois de Roblox, Kahoot, et plus encore! Rejoignez la compétition organisée par l'AFNOO.",
       
       // Tournament 1
       tournament1Title: "RIVALS",
@@ -79,12 +79,12 @@ const translations = {
       faq4A: "Veuillez nous informer avant le tournoi si possible. Les absents seront disqualifiés après 5 minutes.",
       
       // Footer
-      footerOrg: "Organisé par Le Centre franco",
+      footerOrg: "Organisé par l'AFNOO",
       footerContact: "Contact",
       footerPrivacy: "Politique de confidentialité",
       footerAccessibility: "Accessibilité",
       footerCompliance: "Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.",
-      footerCopyright: "© Le Centre franco, 2026 – Tous droits réservés."
+      footerCopyright: "© AFNOO, 2026 – Tous droits réservés."
     },
 
     // Signup Form
@@ -290,7 +290,7 @@ const translations = {
     // Header & Navigation
     header: {
       title: "Tournaments & Competitions",
-      subtitle: "Le Centre franco",
+      subtitle: "AFNOO",
       home: "Home",
       register: "Register",
       brackets: "Brackets",
@@ -301,9 +301,9 @@ const translations = {
 
     // Landing Page
     landing: {
-      welcome: "Welcome to Le Centre franco - Tournaments & Competitions!",
-      tagline: "Franco-Ontarian Centre for Educational Resources",
-      intro: "Participate in our Roblox, Kahoot tournaments, and more! Join the competition organized by Le Centre franco.",
+      welcome: "Welcome to AFNOO - Tournaments & Competitions!",
+      tagline: "The Association of Francophones of Northwestern Ontario",
+      intro: "Participate in our Roblox, Kahoot tournaments, and more! Join the competition organized by AFNOO.",
       
       // Tournament 1
       tournament1Title: "RIVALS",
@@ -363,12 +363,12 @@ const translations = {
       faq4A: "Please let us know before the tournament if possible. No-shows will be disqualified after 5 minutes.",
       
       // Footer
-      footerOrg: "Organized by Le Centre franco",
+      footerOrg: "Organized by AFNOO",
       footerContact: "Contact",
       footerPrivacy: "Privacy Policy",
       footerAccessibility: "Accessibility",
       footerCompliance: "This site is compliant with Web Content Accessibility Guidelines (WCAG) 2.0.",
-      footerCopyright: "© Le Centre franco, 2026 – All rights reserved."
+      footerCopyright: "© AFNOO, 2026 – All rights reserved."
     },
 
     // Signup Form
