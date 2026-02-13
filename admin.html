@@ -457,13 +457,12 @@
                       <input type="text" id="gamePlatform" class="form-input" value="Roblox">
                     </div>
 
-                    <div class="form-group">
-                      <label class="form-label form-label-required">Tournament Type</label>
-                      <select id="tournamentType" class="form-select" required>
-                        <option value="pvp">PvP / Combat</option>
-                        <option value="all-ages">All Ages / Racing</option>
-                        <option value="custom">Custom</option>
-                      </select>
+                    <div class="form-group" style="display: none;">
+                      <label class="form-label">Tournament Type (Auto-generated)</label>
+                      <input type="text" id="tournamentType" class="form-input" placeholder="Auto-generated unique ID">
+                      <small style="display: block; margin-top: 0.25rem; color: #666;">
+                        This field is auto-generated to ensure uniqueness between tournaments.
+                      </small>
                     </div>
 
                     <div class="form-group">

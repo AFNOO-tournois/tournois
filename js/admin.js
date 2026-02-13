@@ -1035,6 +1035,20 @@
     const supabase = window.supabaseConfig.supabase;
     const tournamentId = document.getElementById('tournamentId').value;
     
+    // Auto-generate unique tournament_type if creating new
+    let tournamentType = document.getElementById('tournamentType').value;
+    if (!tournamentId && !tournamentType) {
+      // Generate unique type: lowercase-name-timestamp
+      const nameSlug = document.getElementById('nameEn').value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 20);
+      const timestamp = Date.now();
+      tournamentType = `${nameSlug}-${timestamp}`;
+      console.log('🔧 Auto-generated tournament_type:', tournamentType);
+    }
+    
     const tournamentData = {
       name_fr: document.getElementById('nameFr').value,
       name_en: document.getElementById('nameEn').value,
@@ -1045,7 +1059,7 @@
       format_fr: document.getElementById('formatFr').value || null,
       format_en: document.getElementById('formatEn').value || null,
       game_platform: document.getElementById('gamePlatform').value,
-      tournament_type: document.getElementById('tournamentType').value,
+      tournament_type: tournamentType,
       bracket_style: document.getElementById('bracketStyle').value,
       status: document.getElementById('tournamentStatus').value,
       tournament_date: document.getElementById('tournamentDate').value ? new Date(document.getElementById('tournamentDate').value).toISOString() : null,

@@ -628,6 +628,10 @@
       }
 
       bracketMatches = data || [];
+      console.log('🎯 Loaded bracket matches:', bracketMatches);
+      if (bracketMatches.length > 0) {
+        console.log('📋 First match structure:', bracketMatches[0]);
+      }
       displayBracket();
     } catch (error) {
       console.error('Error:', error);
