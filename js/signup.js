@@ -51,7 +51,7 @@
       const { data: tournaments, error } = await supabase
         .from('tournaments')
         .select('*')
-        .eq('status', 'published')
+        .eq('status', 'published')  // Only show published tournaments (signups open)
         .order('display_order', { ascending: true });
       
       if (error) {
