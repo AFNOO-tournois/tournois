@@ -181,9 +181,11 @@
     }
     
     // Get form data
+    const tournamentRadio = document.querySelector('input[name="tournament"]:checked');
     const formData = {
       robloxUsername: document.getElementById('robloxUsername').value.trim(),
-      tournament: document.querySelector('input[name="tournament"]:checked')?.value,
+      tournament: tournamentRadio?.value,
+      tournamentId: tournamentRadio?.dataset.tournamentId, // Get the UUID
       ageConfirm: document.getElementById('ageConfirm').checked,
       rulesAccept: document.getElementById('rulesAccept').checked,
       honeypot: honeypot // Include for database-level check too
@@ -276,12 +278,12 @@
     const supabase = window.supabaseConfig.supabase;
     const TABLES = window.supabaseConfig.TABLES;
     
-    // Check for duplicate registration
+    // Check for duplicate registration using tournament_id
     const { data: existing, error: checkError } = await supabase
       .from(TABLES.PARTICIPANTS)
       .select('*')
       .eq('roblox_username', formData.robloxUsername)
-      .eq('tournament_type', formData.tournament);
+      .eq('tournament_id', formData.tournamentId);
     
     if (checkError) {
       throw new Error('Database check error: ' + checkError.message);
@@ -291,12 +293,13 @@
       throw new Error('User already registered for this tournament');
     }
     
-    // Insert new participant
+    // Insert new participant with tournament_id
     const { data, error } = await supabase
       .from(TABLES.PARTICIPANTS)
       .insert({
         roblox_username: formData.robloxUsername,
-        tournament_type: formData.tournament,
+        tournament_id: formData.tournamentId,
+        tournament_type: formData.tournament, // Keep for backwards compatibility
         honeypot: null // Always null for real users (bots would fill this)
       })
       .select()

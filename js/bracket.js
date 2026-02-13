@@ -202,12 +202,20 @@
       const supabase = window.supabaseConfig.supabase;
       const TABLES = window.supabaseConfig.TABLES;
       
-      // Fetch participants for this tournament
-      console.log('👥 Fetching participants for tournament_type:', tournament);
+      // Get tournament object first
+      const tournamentObj = tournaments.find(t => t.tournament_type === tournament);
+      if (!tournamentObj) {
+        console.error('❌ Tournament object not found for:', tournament);
+        showEmpty();
+        return;
+      }
+      
+      // Fetch participants for this tournament using tournament_id
+      console.log('👥 Fetching participants for tournament_id:', tournamentObj.id);
       const { data: participants, error } = await supabase
         .from(TABLES.PARTICIPANTS)
         .select('*')
-        .eq('tournament_type', tournament)
+        .eq('tournament_id', tournamentObj.id)
         .order('signup_timestamp', { ascending: true });
       
       if (error) {
@@ -219,27 +227,20 @@
       console.log('✅ Found participants:', participants ? participants.length : 0, participants);
       
       if (!participants || participants.length === 0) {
-        console.warn('⚠️ No participants found for tournament_type:', tournament);
+        console.warn('⚠️ No participants found for tournament_id:', tournamentObj.id);
         showEmpty();
         return;
       }
       
       // Store participants globally
       currentParticipants = participants;
-      
-      // Get tournament object
-      const tournamentObj = tournaments.find(t => t.tournament_type === tournament);
-      if (!tournamentObj) {
-        displayParticipants(participants);
-        return;
-      }
 
-      // Fetch match results for leaderboard
-      console.log('🔍 Fetching matches for tournament:', tournament);
+      // Fetch match results for leaderboard using tournament_id
+      console.log('🔍 Fetching matches for tournament_id:', tournamentObj.id);
       const { data: matches, error: matchError } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
-        .eq('tournament_type', tournament)
+        .eq('tournament_id', tournamentObj.id)
         .order('round_number', { ascending: true });
 
       if (matchError) {
