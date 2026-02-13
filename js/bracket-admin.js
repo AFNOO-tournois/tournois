@@ -328,22 +328,35 @@
       const { data: matches, error } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
-        .eq('tournament_id', currentTournament.id);
+        .eq('tournament_type', currentTournament.tournament_type);
 
-      if (error || !matches || matches.length === 0) {
+      if (error) {
+        console.error('Error fetching matches for seeding:', error);
         console.warn('No match results found, using signup order');
         return participants;
       }
 
-      // Calculate total points per participant
+      if (!matches || matches.length === 0) {
+        console.warn('No match results found, using signup order');
+        return participants;
+      }
+
+      console.log(`Found ${matches.length} matches for seeding calculation`);
+
+      // Calculate total points per participant from scores object
       const pointsMap = {};
       participants.forEach(p => {
         pointsMap[p.id] = 0;
       });
 
       matches.forEach(match => {
-        if (pointsMap[match.participant_id] !== undefined) {
-          pointsMap[match.participant_id] += match.points || 0;
+        if (match.scores) {
+          Object.entries(match.scores).forEach(([username, scoreData]) => {
+            const participant = participants.find(p => p.roblox_username === username);
+            if (participant && pointsMap[participant.id] !== undefined) {
+              pointsMap[participant.id] += scoreData.points || 0;
+            }
+          });
         }
       });
 
@@ -455,10 +468,21 @@
     const supabase = window.supabaseConfig.supabase;
 
     try {
-      // Add tournament_id to each match
+      // Keep original matches with temp IDs for reference
+      const originalMatches = [...matches];
+      
+      // Add tournament_id and remove temp next_match_id for initial insert
       const matchesWithTournament = matches.map(m => ({
-        ...m,
-        tournament_id: currentTournament.id
+        tournament_id: currentTournament.id,
+        round_number: m.round_number,
+        match_number: m.match_number,
+        player1_id: m.player1_id,
+        player2_id: m.player2_id,
+        player1_seed: m.player1_seed,
+        player2_seed: m.player2_seed,
+        winner_id: m.winner_id,
+        match_status: m.match_status || 'pending',
+        next_match_id: null // Set to null initially, will update after
       }));
 
       const { data, error } = await supabase
@@ -474,7 +498,7 @@
 
       // Update next_match_id references with real IDs
       if (data && data.length > 0) {
-        await updateNextMatchIds(data);
+        await updateNextMatchIds(data, originalMatches);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -482,38 +506,48 @@
     }
   }
 
-  async function updateNextMatchIds(savedMatches) {
+  async function updateNextMatchIds(savedMatches, originalMatches) {
     const supabase = window.supabaseConfig.supabase;
     
-    // Build map of temp IDs to real IDs
+    // Build map of temp IDs to real IDs (round_number + match_number -> real ID)
     const idMap = {};
     savedMatches.forEach(m => {
       const tempKey = `temp_${m.round_number}_${m.match_number}`;
       idMap[tempKey] = m.id;
     });
 
-    // Update next_match_id with real IDs
+    // Build update list by matching saved matches with originals
     const updates = [];
-    savedMatches.forEach(m => {
-      if (m.next_match_id && m.next_match_id.toString().startsWith('temp_')) {
-        const realId = idMap[m.next_match_id];
-        if (realId) {
-          updates.push({
-            id: m.id,
-            next_match_id: realId
-          });
+    savedMatches.forEach((savedMatch, index) => {
+      const originalMatch = originalMatches[index];
+      
+      // Check if original match had a next_match_id
+      if (originalMatch && originalMatch.next_match_id) {
+        const nextMatchIdStr = originalMatch.next_match_id.toString();
+        
+        // If it's a temp ID, look up the real ID
+        if (nextMatchIdStr.startsWith('temp_')) {
+          const realId = idMap[nextMatchIdStr];
+          if (realId) {
+            updates.push({
+              id: savedMatch.id,
+              next_match_id: realId
+            });
+          }
         }
       }
     });
 
     // Batch update
     if (updates.length > 0) {
+      console.log(`Updating ${updates.length} next_match_id references...`);
       for (const update of updates) {
         await supabase
           .from('bracket_matches')
           .update({ next_match_id: update.next_match_id })
           .eq('id', update.id);
       }
+      console.log('✅ Next match IDs updated successfully');
     }
   }
 
