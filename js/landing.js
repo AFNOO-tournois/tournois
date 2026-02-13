@@ -73,6 +73,11 @@
       generateTournamentCard(tournament, index, currentLang)
     ).join('');
     
+    // Apply current language to dynamically inserted labels (data-i18n)
+    if (window.i18n && window.i18n.updateAllText) {
+      window.i18n.updateAllText();
+    }
+    
     // Start countdowns
     tournaments.forEach((tournament, index) => {
       if (tournament.tournament_date) {
@@ -129,16 +134,16 @@
           <p style="margin: 0 0 0.5rem 0; font-weight: 600; opacity: 0.9;">⏱️ <span data-i18n="landing.countdownStarts">Commence dans</span>:</p>
           <div style="display: flex; justify-content: center; gap: 0.75rem; font-family: 'Poppins', sans-serif;">
             <div>
-              <span id="countdown${index}-days" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">j</span>
+              <span id="countdown${index}-days" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;" data-i18n="landing.daysAbbrev">j</span>
             </div>
             <div>
-              <span id="countdown${index}-hours" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">h</span>
+              <span id="countdown${index}-hours" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;" data-i18n="landing.hoursAbbrev">h</span>
             </div>
             <div>
-              <span id="countdown${index}-minutes" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">m</span>
+              <span id="countdown${index}-minutes" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;" data-i18n="landing.minutesAbbrev">m</span>
             </div>
             <div>
-              <span id="countdown${index}-seconds" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">s</span>
+              <span id="countdown${index}-seconds" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;" data-i18n="landing.secondsAbbrev">s</span>
             </div>
           </div>
         </div>

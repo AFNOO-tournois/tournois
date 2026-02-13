@@ -57,6 +57,10 @@ const translations = {
       hours: "heures",
       minutes: "minutes",
       seconds: "secondes",
+      daysAbbrev: "j",
+      hoursAbbrev: "h",
+      minutesAbbrev: "m",
+      secondsAbbrev: "s",
       noTournaments: "Aucun tournoi disponible",
       checkBackSoon: "Revenez bientôt pour les prochains tournois!",
       
@@ -342,6 +346,10 @@ const translations = {
       hours: "hours",
       minutes: "minutes",
       seconds: "seconds",
+      daysAbbrev: "d",
+      hoursAbbrev: "h",
+      minutesAbbrev: "m",
+      secondsAbbrev: "s",
       noTournaments: "No tournaments available",
       checkBackSoon: "Check back soon for upcoming tournaments!",
       
