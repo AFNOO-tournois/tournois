@@ -50,6 +50,21 @@ TROUBLESHOOTING.md
 PROJECT_COMPLETE.md
 DEPLOYMENT_CHECKLIST.md
 DYNAMIC_TOURNAMENT_PLAN.md
+DYNAMIC_TOURNAMENT_GUIDE.md
 CHANGELOG.md
 test-translation.html
 assets/images/README.md
+
+# Security and Setup SQL files (local only)
+SECURITY_GUIDE.md
+SECURITY_SETUP.sql
+SECURITY_FIX.sql
+DATABASE_UPDATE_BRACKET_STYLE.sql
+
+# Admin and status documentation (local only)
+ADMIN_FIX_INSTRUCTIONS.md
+BRACKET_VISUALIZATION_TODO.md
+STATUS_AND_NEXT_STEPS.md
+
+# Any other .md files in root
+*.md
