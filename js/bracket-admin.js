@@ -661,7 +661,7 @@
 
       html += `
         <div style="margin-bottom: 2rem;">
-          <h4 style="color: #005CA9; margin-bottom: 1rem;">${roundName}</h4>
+          <h4 style="color: #28724f; margin-bottom: 1rem;">${roundName}</h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
       `;
 
@@ -704,14 +704,14 @@
     const canSelect = match.player1_id && match.player2_id && !isCompleted;
 
     return `
-      <div class="bracket-match ${isCompleted ? 'completed' : ''}" style="background: white; border: 2px solid ${isCompleted ? '#8DC63F' : '#e0e0e0'}; border-radius: 8px; padding: 1rem;">
+      <div class="bracket-match ${isCompleted ? 'completed' : ''}" style="background: white; border: 2px solid ${isCompleted ? '#6ab04c' : '#e0e0e0'}; border-radius: 8px; padding: 1rem;">
         <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #666; font-weight: 600;">
           Match ${match.match_number}
         </div>
         
         <div style="margin-bottom: 0.5rem;">
-          <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player1Name ? 'background: #8DC63F20;' : ''}">
-            ${match.player1_seed ? `<span style="background: #005CA9; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player1_seed}</span>` : ''}
+          <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player1Name ? 'background: #6ab04c20;' : ''}">
+            ${match.player1_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player1_seed}</span>` : ''}
             <strong>${player1Name}</strong>
             ${winnerName === player1Name ? ' ✓' : ''}
           </div>
@@ -720,8 +720,8 @@
         <div style="text-align: center; margin: 0.5rem 0; color: #999; font-weight: 600;">VS</div>
 
         <div style="margin-bottom: 0.5rem;">
-          <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player2Name ? 'background: #8DC63F20;' : ''}">
-            ${match.player2_seed ? `<span style="background: #005CA9; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player2_seed}</span>` : ''}
+          <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player2Name ? 'background: #6ab04c20;' : ''}">
+            ${match.player2_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player2_seed}</span>` : ''}
             <strong>${player2Name}</strong>
             ${winnerName === player2Name ? ' ✓' : ''}
           </div>
@@ -737,7 +737,7 @@
             </button>
           </div>
         ` : isCompleted ? `
-          <div style="margin-top: 1rem; text-align: center; color: #8DC63F; font-weight: 700;">
+          <div style="margin-top: 1rem; text-align: center; color: #6ab04c; font-weight: 700;">
             Winner: ${winnerName}
           </div>
         ` : `

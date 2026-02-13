@@ -28,10 +28,10 @@
   text-align: center;
   font-weight: 700;
   font-size: 1.125rem;
-  color: #005CA9;
+  color: #28724f;
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 3px solid #8DC63F;
+  border-bottom: 3px solid #6ab04c;
 }
 
 .bracket-match {
@@ -50,7 +50,7 @@
 }
 
 .bracket-match.completed {
-  border-color: #8DC63F;
+  border-color: #6ab04c;
 }
 
 .bracket-player {
@@ -67,7 +67,7 @@
 }
 
 .bracket-player.winner {
-  background: linear-gradient(to right, #8DC63F20, transparent);
+  background: linear-gradient(to right, #6ab04c20, transparent);
   font-weight: 700;
 }
 
@@ -75,7 +75,7 @@
   content: '✓';
   position: absolute;
   left: 0.5rem;
-  color: #8DC63F;
+  color: #6ab04c;
   font-weight: 700;
   font-size: 1.25rem;
 }
@@ -99,7 +99,7 @@
 }
 
 .player-seed {
-  background: #005CA9;
+  background: #28724f;
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;

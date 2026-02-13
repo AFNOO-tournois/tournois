@@ -262,7 +262,7 @@
       return `
       <tr>
         <td>${index + 1}</td>
-        <td style="font-weight: 600; color: #005CA9;">${escapeHtml(p.roblox_username)}</td>
+        <td style="font-weight: 600; color: #28724f;">${escapeHtml(p.roblox_username)}</td>
         <td>${escapeHtml(tournamentName)}</td>
         <td>${formatDate(p.signup_timestamp)}</td>
         <td>
@@ -656,7 +656,7 @@
             data-original-placement="${result.placement}"
           >
         </td>
-        <td style="text-align: center; font-weight: 600; color: #8DC63F; font-size: 1.125rem;">
+        <td style="text-align: center; font-weight: 600; color: #6ab04c; font-size: 1.125rem;">
           ${result.points}
         </td>
         <td style="text-align: center;">
@@ -670,7 +670,7 @@
           <button 
             class="btn btn-sm btn-outline" 
             onclick="window.adminDeleteResult('${result.matchId}', '${escapeHtml(result.username)}')"
-            style="padding: 0.25rem 0.75rem; font-size: 0.875rem; color: #E6007E; border-color: #E6007E;"
+            style="padding: 0.25rem 0.75rem; font-size: 0.875rem; color: #40916c; border-color: #40916c;"
           >
             🗑️ Delete
           </button>
@@ -942,7 +942,7 @@
     tbody.innerHTML = tournaments.map(t => `
       <tr>
         <td>
-          <strong style="color: #005CA9;">${escapeHtml(t.name_fr)}</strong><br>
+          <strong style="color: #28724f;">${escapeHtml(t.name_fr)}</strong><br>
           <small style="color: #666;">${escapeHtml(t.name_en)}</small>
         </td>
         <td>${formatTournamentDate(t.tournament_date)}</td>

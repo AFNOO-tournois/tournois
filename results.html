@@ -97,16 +97,16 @@
             <div style="text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #C0C0C0; min-width: 200px;">
               <div style="font-size: 4rem; margin-bottom: 0.5rem;">🥈</div>
               <h3 data-i18n="results.secondPlace">2e place</h3>
-              <p id="second-username" style="font-weight: 700; font-size: 1.25rem; color: #005CA9; margin-top: 0.5rem;">---</p>
-              <p id="second-points" style="color: #8DC63F; font-weight: 600;">--- points</p>
+              <p id="second-username" style="font-weight: 700; font-size: 1.25rem; color: #28724f; margin-top: 0.5rem;">---</p>
+              <p id="second-points" style="color: #6ab04c; font-weight: 600;">--- points</p>
             </div>
             
             <!-- 1st Place (Elevated) -->
             <div style="text-align: center; padding: 3rem 2rem; background: white; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-top: 4px solid #FFD700; transform: scale(1.1); min-width: 220px;">
               <div style="font-size: 5rem; margin-bottom: 0.5rem;">🥇</div>
               <h3 data-i18n="results.firstPlace">1ère place</h3>
-              <p id="first-username" style="font-weight: 700; font-size: 1.5rem; color: #005CA9; margin-top: 0.5rem;">---</p>
-              <p id="first-points" style="color: #8DC63F; font-weight: 700; font-size: 1.25rem;">--- points</p>
+              <p id="first-username" style="font-weight: 700; font-size: 1.5rem; color: #28724f; margin-top: 0.5rem;">---</p>
+              <p id="first-points" style="color: #6ab04c; font-weight: 700; font-size: 1.25rem;">--- points</p>
               <p style="margin-top: 1rem; font-size: 0.875rem;">
                 <span data-i18n="results.congratulations">Félicitations!</span> 🎉
               </p>
@@ -116,8 +116,8 @@
             <div style="text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #CD7F32; min-width: 200px;">
               <div style="font-size: 4rem; margin-bottom: 0.5rem;">🥉</div>
               <h3 data-i18n="results.thirdPlace">3e place</h3>
-              <p id="third-username" style="font-weight: 700; font-size: 1.25rem; color: #005CA9; margin-top: 0.5rem;">---</p>
-              <p id="third-points" style="color: #8DC63F; font-weight: 600;">--- points</p>
+              <p id="third-username" style="font-weight: 700; font-size: 1.25rem; color: #28724f; margin-top: 0.5rem;">---</p>
+              <p id="third-points" style="color: #6ab04c; font-weight: 600;">--- points</p>
             </div>
             
           </div>
@@ -145,7 +145,7 @@
         </div>
 
         <!-- Thank You Section -->
-        <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #005CA9 0%, #004a8a 100%); border-radius: 12px; color: white;">
+        <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #28724f 0%, #1b4d3a 100%); border-radius: 12px; color: white;">
           <h2 style="color: white; margin-bottom: 1rem;" data-i18n="results.thankYou">Merci d'avoir participé!</h2>
           <p style="font-size: 1.125rem; opacity: 0.9; margin-bottom: 2rem;" data-i18n="results.nextTournament">
             Restez à l'écoute pour le prochain tournoi!
@@ -405,7 +405,7 @@
           <td style="font-weight: 700;">${index + 1}</td>
           <td style="font-weight: 600;">${escapeHtml(player.username)}</td>
           <td>${player.matchCount}</td>
-          <td style="font-weight: 700; color: #8DC63F;">${player.totalPoints}</td>
+          <td style="font-weight: 700; color: #6ab04c;">${player.totalPoints}</td>
         </tr>
       `).join('');
     }
@@ -471,7 +471,7 @@
       const totalRounds = Object.keys(rounds).length;
 
       let html = `
-        <h2 style="margin-bottom: 1.5rem; text-align: center; color: #005CA9;">
+        <h2 style="margin-bottom: 1.5rem; text-align: center; color: #28724f;">
           🌳 <span data-i18n="bracket.bracketTitle">Bracket d'élimination</span>
         </h2>
         <div class="bracket-container">
@@ -564,31 +564,31 @@
         <tr>
           <td style="font-weight: 700; color: #FFD700;">🥇 1</td>
           <td style="font-weight: 600;">ProGamer123</td>
-          <td style="color: #8DC63F; font-weight: 700;">265</td>
+          <td style="color: #6ab04c; font-weight: 700;">265</td>
           <td><span class="badge badge-success">Winner</span></td>
         </tr>
         <tr>
           <td style="font-weight: 700; color: #C0C0C0;">🥈 2</td>
           <td style="font-weight: 600;">NinjaWarrior</td>
-          <td style="color: #8DC63F; font-weight: 700;">245</td>
+          <td style="color: #6ab04c; font-weight: 700;">245</td>
           <td><span class="badge badge-success">2nd Place</span></td>
         </tr>
         <tr>
           <td style="font-weight: 700; color: #CD7F32;">🥉 3</td>
           <td style="font-weight: 600;">SpeedRunner42</td>
-          <td style="color: #8DC63F; font-weight: 700;">215</td>
+          <td style="color: #6ab04c; font-weight: 700;">215</td>
           <td><span class="badge badge-success">3rd Place</span></td>
         </tr>
         <tr>
           <td>4</td>
           <td>CoolPlayer99</td>
-          <td style="color: #8DC63F; font-weight: 600;">180</td>
+          <td style="color: #6ab04c; font-weight: 600;">180</td>
           <td><span class="badge badge-info">Completed</span></td>
         </tr>
         <tr>
           <td>5</td>
           <td>EpicGamer777</td>
-          <td style="color: #8DC63F; font-weight: 600;">150</td>
+          <td style="color: #6ab04c; font-weight: 600;">150</td>
           <td><span class="badge badge-info">Completed</span></td>
         </tr>
       `;

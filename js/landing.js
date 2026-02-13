@@ -125,7 +125,7 @@
         </div>
         
         <!-- Countdown Timer -->
-        <div id="countdown${index}Container" style="display: none; margin: 1rem 0; padding: 1rem; background: linear-gradient(135deg, ${index % 2 === 0 ? '#005CA9 0%, #004a8a' : '#8DC63F 0%, #7ab62f'} 100%); border-radius: 8px; color: white; text-align: center;">
+        <div id="countdown${index}Container" style="display: none; margin: 1rem 0; padding: 1rem; background: linear-gradient(135deg, ${index % 2 === 0 ? '#28724f 0%, #1b4d3a' : '#6ab04c 0%, #5a9a3d'} 100%); border-radius: 8px; color: white; text-align: center;">
           <p style="margin: 0 0 0.5rem 0; font-weight: 600; opacity: 0.9;">⏱️ <span data-i18n="landing.countdownStarts">Commence dans</span>:</p>
           <div style="display: flex; justify-content: center; gap: 0.75rem; font-family: 'Poppins', sans-serif;">
             <div>
@@ -144,11 +144,11 @@
         </div>
         
         ${tournament.status === 'completed' ? `
-          <a href="results.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #8DC63F 0%, #7ab62f 100%); color: white;">
+          <a href="results.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #6ab04c 0%, #5a9a3d 100%); color: white;">
             ✓ <span data-i18n="landing.tournamentCompleted">Tournoi terminé</span> - <span data-i18n="landing.viewResults">Voir les résultats</span>
           </a>
         ` : tournament.status === 'in-progress' ? `
-          <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #E6007E 0%, #c4005f 100%); border-radius: 8px; text-align: center;">
+          <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #40916c 0%, #2d6a4f 100%); border-radius: 8px; text-align: center;">
             <p style="color: white; font-weight: 700; font-size: 1.125rem; margin: 0;">
               🏆 <span data-i18n="landing.tournamentInProgress">Tournoi en cours</span>
             </p>

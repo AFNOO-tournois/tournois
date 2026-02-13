@@ -6,23 +6,24 @@
 
 /* ============================================
    CSS VARIABLES - AFNOO Brand Colors
+   Matches https://www.afnoo.org/ (greens from logo)
    ============================================ */
 :root {
-  /* AFNOO brand colors */
-  --cf-blue-primary: #005CA9;
-  --cf-green: #8DC63F;
-  --cf-pink: #E6007E;
+  /* AFNOO brand - greens from logo */
+  --cf-blue-primary: #28724f;   /* AFNOO dark green (primary) */
+  --cf-green: #6ab04c;          /* AFNOO light green (secondary) */
+  --cf-pink: #40916c;           /* AFNOO accent green (links, focus) */
   
   /* Grayscale */
   --cf-dark: #333333;
-  --cf-gray: #666666;
-  --cf-light-gray: #F5F5F5;
+  --cf-gray: #555555;
+  --cf-light-gray: #f0f4f2;
   --cf-white: #FFFFFF;
   
   /* Semantic Colors */
   --color-success: var(--cf-green);
-  --color-error: #D32F2F;
-  --color-warning: #F57C00;
+  --color-error: #C62828;
+  --color-warning: #EF6C00;
   --color-info: var(--cf-blue-primary);
   
   /* Typography */
@@ -276,7 +277,7 @@ a:focus-visible {
 }
 
 .btn-primary:hover {
-  background: #004a8a;
+  background: #1b4d3a;
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
@@ -288,7 +289,7 @@ a:focus-visible {
 }
 
 .btn-secondary:hover {
-  background: #7ab62f;
+  background: #5a9a3d;
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
@@ -300,7 +301,7 @@ a:focus-visible {
 }
 
 .btn-accent:hover {
-  background: #c5006a;
+  background: #2d6a4f;
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
   text-decoration: none;
@@ -328,7 +329,7 @@ a:focus-visible {
    HERO SECTION
    ============================================ */
 .hero {
-  background: linear-gradient(135deg, var(--cf-blue-primary) 0%, #004a8a 100%);
+  background: linear-gradient(135deg, var(--cf-blue-primary) 0%, #1b4d3a 100%);
   color: var(--cf-white);
   text-align: center;
   padding: var(--spacing-2xl) 0;
@@ -657,6 +658,7 @@ a:focus-visible {
   max-width: 250px;
   height: auto;
   margin-bottom: var(--spacing-lg);
+  background: transparent;
 }
 
 .footer-links {

@@ -530,7 +530,7 @@
                   <td style="text-align: center; color: #666;">
                     ${player.roundsPlayed}
                   </td>
-                  <td style="text-align: center; font-weight: 700; font-size: 1.25rem; color: #8DC63F;">
+                  <td style="text-align: center; font-weight: 700; font-size: 1.25rem; color: #6ab04c;">
                     ${player.totalPoints}
                   </td>
                 </tr>
