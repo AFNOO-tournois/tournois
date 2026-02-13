@@ -244,17 +244,20 @@
     document.getElementById('generateBracketForm').classList.remove('hidden');
     
     // Set default bracket size based on participants
-    const sizeSelect = document.getElementById('bracketSize');
+    const sizeInput = document.getElementById('bracketSize');
     const participantCount = participants.length;
 
+    // Default to all participants or suggest power of 2
     if (participantCount <= 4) {
-      sizeSelect.value = '4';
+      sizeInput.value = 4;
     } else if (participantCount <= 8) {
-      sizeSelect.value = '8';
+      sizeInput.value = 8;
     } else if (participantCount <= 16) {
-      sizeSelect.value = '16';
+      sizeInput.value = 16;
+    } else if (participantCount <= 32) {
+      sizeInput.value = 32;
     } else {
-      sizeSelect.value = '32';
+      sizeInput.value = participantCount; // Or all of them
     }
   }
 
@@ -264,32 +267,51 @@
 
   async function generateBracket() {
     const seedingMethod = document.getElementById('seedingMethod').value;
-    const participantCount = participants.length;
+    const desiredBracketSize = parseInt(document.getElementById('bracketSize').value);
+    const totalParticipants = participants.length;
 
-    if (participantCount < 2) {
+    // Validation
+    if (!desiredBracketSize || desiredBracketSize < 2) {
+      alert('Please enter a valid number of players (minimum 2)');
+      return;
+    }
+
+    if (totalParticipants < 2) {
       alert('Need at least 2 participants to generate a bracket!');
       return;
     }
 
-    // Calculate bracket size (next power of 2)
-    const bracketSize = Math.pow(2, Math.ceil(Math.log2(participantCount)));
-    const byesNeeded = bracketSize - participantCount;
-
-    if (!confirm(`Generate bracket for ${participantCount} participants?\n\n` +
-      `Bracket size: ${bracketSize} (${byesNeeded} bye${byesNeeded === 1 ? '' : 's'})`)) {
+    if (desiredBracketSize > totalParticipants) {
+      alert(`Cannot advance ${desiredBracketSize} players - only ${totalParticipants} participants registered!`);
       return;
     }
 
-    // Get seeded participants
-    let seededParticipants = await getSeededParticipants(participantCount, seedingMethod);
+    // Calculate actual bracket size (next power of 2)
+    const actualBracketSize = Math.pow(2, Math.ceil(Math.log2(desiredBracketSize)));
+    const byesNeeded = actualBracketSize - desiredBracketSize;
 
-    if (!seededParticipants || seededParticipants.length !== participantCount) {
+    if (!confirm(`Generate bracket with TOP ${desiredBracketSize} players?\n\n` +
+      `Total participants: ${totalParticipants}\n` +
+      `Advancing to bracket: ${desiredBracketSize}\n` +
+      `Bracket size: ${actualBracketSize} (${byesNeeded} bye${byesNeeded === 1 ? '' : 's'})`)) {
+      return;
+    }
+
+    // Get ALL seeded participants first
+    let allSeededParticipants = await getSeededParticipants(totalParticipants, seedingMethod);
+
+    if (!allSeededParticipants || allSeededParticipants.length === 0) {
       alert('Error generating bracket: Could not seed participants');
       return;
     }
 
+    // Take only the TOP N players
+    const topPlayers = allSeededParticipants.slice(0, desiredBracketSize);
+    
+    console.log(`Selected top ${topPlayers.length} players for bracket:`, topPlayers.map(p => p.roblox_username));
+
     // Generate bracket structure with byes
-    const matches = createBracketStructure(seededParticipants, bracketSize);
+    const matches = createBracketStructure(topPlayers, actualBracketSize);
 
     // Save to database
     await saveBracketMatches(matches);
@@ -298,7 +320,7 @@
     await checkBracketExists();
     await loadAndDisplayBracket();
 
-    alert(`✓ Bracket generated successfully!\n${participantCount} participants, ${byesNeeded} bye rounds`);
+    alert(`✓ Bracket generated successfully!\n\nTop ${desiredBracketSize} of ${totalParticipants} participants advanced\nBracket size: ${actualBracketSize} (${byesNeeded} bye${byesNeeded === 1 ? '' : 's'})`);
   }
 
   async function getSeededParticipants(bracketSize, method) {
