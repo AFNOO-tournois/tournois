@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Résultats des tournois - Le Centre franco">
+  <meta name="keywords" content="résultats, tournoi, Le Centre franco">
+  <meta name="author" content="Le Centre franco">
+  
+  <title>Résultats - Le Centre franco</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo-only.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase Client (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="header-container">
+      <!-- Logo -->
+      <a href="index.html" class="logo-container" aria-label="Le Centre franco - Accueil">
+        <img src="assets/images/logo-only.png" alt="Le Centre franco logo" class="logo-img">
+        <div class="logo-text">
+          <h1 class="logo-title" data-i18n="header.title">Tournois et compétitions</h1>
+          <p class="logo-subtitle" data-i18n="header.subtitle">Le Centre franco</p>
+        </div>
+      </a>
+      
+      <!-- Navigation -->
+      <nav role="navigation" aria-label="Navigation principale">
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link" data-i18n="header.home">Accueil</a></li>
+          <li><a href="signup.html" class="nav-link" data-i18n="header.register">S'inscrire</a></li>
+          <li><a href="bracket.html" class="nav-link" data-i18n="header.brackets">Tableaux</a></li>
+          <li><a href="results.html" class="nav-link" data-i18n="header.results">Résultats</a></li>
+          <li>
+            <button id="langToggle" class="lang-toggle" aria-label="Changer la langue">EN</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="section">
+    <div class="container">
+      
+      <!-- Page Title -->
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 data-i18n="results.title">Résultats du tournoi</h1>
+      </div>
+
+      <!-- Tournament Selection -->
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap;">
+        <button id="tab-pvp" class="btn btn-primary tournament-tab active" data-tournament="pvp" style="min-width: 200px;">
+          🎮 RIVALS (13-18)
+        </button>
+        <button id="tab-racing" class="btn btn-secondary tournament-tab" data-tournament="all-ages" style="min-width: 200px;">
+          🏁 <span data-i18n="landing.tournament2Title">Course de voitures</span>
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" style="text-align: center; padding: 3rem;">
+        <div class="loading" style="margin: 0 auto;"></div>
+        <p style="margin-top: 1rem; color: #666;" data-i18n="common.loading">Chargement...</p>
+      </div>
+
+      <!-- No Results State -->
+      <div id="noResultsState" class="hidden" style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 12px;">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">🏆</p>
+        <h3 data-i18n="results.upcomingTitle">Tournoi en cours ou à venir</h3>
+        <p style="color: #666; margin-bottom: 2rem;" data-i18n="results.upcomingMessage">Les résultats seront disponibles une fois le tournoi terminé.</p>
+        <a href="bracket.html" class="btn btn-primary" data-i18n="header.brackets">Voir les tableaux</a>
+      </div>
+
+      <!-- Results Content -->
+      <div id="resultsContent" class="hidden">
+        
+        <!-- Podium Section -->
+        <div id="podiumSection" style="margin-bottom: 3rem;">
+          <h2 style="text-align: center; margin-bottom: 2rem;" data-i18n="results.finalStandings">Classement final</h2>
+          
+          <div style="display: flex; align-items: flex-end; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 3rem;">
+            
+            <!-- 2nd Place -->
+            <div style="text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #C0C0C0; min-width: 200px;">
+              <div style="font-size: 4rem; margin-bottom: 0.5rem;">🥈</div>
+              <h3 data-i18n="results.secondPlace">2e place</h3>
+              <p id="second-username" style="font-weight: 700; font-size: 1.25rem; color: #005CA9; margin-top: 0.5rem;">---</p>
+              <p id="second-points" style="color: #8DC63F; font-weight: 600;">--- points</p>
+            </div>
+            
+            <!-- 1st Place (Elevated) -->
+            <div style="text-align: center; padding: 3rem 2rem; background: white; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-top: 4px solid #FFD700; transform: scale(1.1); min-width: 220px;">
+              <div style="font-size: 5rem; margin-bottom: 0.5rem;">🥇</div>
+              <h3 data-i18n="results.firstPlace">1ère place</h3>
+              <p id="first-username" style="font-weight: 700; font-size: 1.5rem; color: #005CA9; margin-top: 0.5rem;">---</p>
+              <p id="first-points" style="color: #8DC63F; font-weight: 700; font-size: 1.25rem;">--- points</p>
+              <p style="margin-top: 1rem; font-size: 0.875rem;">
+                <span data-i18n="results.congratulations">Félicitations!</span> 🎉
+              </p>
+            </div>
+            
+            <!-- 3rd Place -->
+            <div style="text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 4px solid #CD7F32; min-width: 200px;">
+              <div style="font-size: 4rem; margin-bottom: 0.5rem;">🥉</div>
+              <h3 data-i18n="results.thirdPlace">3e place</h3>
+              <p id="third-username" style="font-weight: 700; font-size: 1.25rem; color: #005CA9; margin-top: 0.5rem;">---</p>
+              <p id="third-points" style="color: #8DC63F; font-weight: 600;">--- points</p>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Full Standings Table -->
+        <div style="margin-bottom: 3rem;">
+          <h2 style="margin-bottom: 1.5rem;" data-i18n="results.finalStandings">Classement complet</h2>
+          
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th data-i18n="bracket.rank">Rang</th>
+                  <th data-i18n="bracket.participant">Participant</th>
+                  <th data-i18n="bracket.totalPoints">Points totaux</th>
+                  <th data-i18n="bracket.status">Statut</th>
+                </tr>
+              </thead>
+              <tbody id="standingsTableBody">
+                <!-- Standings will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Thank You Section -->
+        <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #005CA9 0%, #004a8a 100%); border-radius: 12px; color: white;">
+          <h2 style="color: white; margin-bottom: 1rem;" data-i18n="results.thankYou">Merci d'avoir participé!</h2>
+          <p style="font-size: 1.125rem; opacity: 0.9; margin-bottom: 2rem;" data-i18n="results.nextTournament">
+            Restez à l'écoute pour le prochain tournoi!
+          </p>
+          <a href="index.html" class="btn btn-accent" data-i18n="results.signupNext">S'inscrire au prochain tournoi</a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <img src="assets/images/logo-full.png" alt="Le Centre franco" class="footer-logo">
+      
+      <p style="margin: 1rem 0;" data-i18n="landing.footerOrg">Organisé par Le Centre franco</p>
+      
+      <nav aria-label="Navigation du pied de page">
+        <div class="footer-links">
+          <a href="mailto:info@lecentrefranco.ca" class="footer-link" data-i18n="landing.footerContact">Contact</a>
+          <a href="#privacy" class="footer-link" data-i18n="landing.footerPrivacy">Politique de confidentialité</a>
+          <a href="https://www.lecentrefranco.ca/" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="landing.footerAccessibility">Accessibilité</a>
+        </div>
+      </nav>
+      
+      <p class="footer-compliance" data-i18n="landing.footerCompliance">
+        Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.
+      </p>
+      
+      <p class="footer-copyright" data-i18n="landing.footerCopyright">
+        © Le Centre franco, 2026 – Tous droits réservés.
+      </p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/language.js"></script>
+
+  <script>
+    // Results page logic
+    let currentTournament = 'pvp';
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setupTournamentTabs();
+      loadResults(currentTournament);
+    });
+
+    function setupTournamentTabs() {
+      const tabs = document.querySelectorAll('.tournament-tab');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const tournament = this.getAttribute('data-tournament');
+          switchTournament(tournament);
+        });
+      });
+    }
+
+    function switchTournament(tournament) {
+      currentTournament = tournament;
+      
+      // Update active tab
+      document.querySelectorAll('.tournament-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[data-tournament="${tournament}"]`).classList.add('active');
+      
+      // Load results
+      loadResults(tournament);
+    }
+
+    async function loadResults(tournament) {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('noResultsState').classList.add('hidden');
+      document.getElementById('resultsContent').classList.add('hidden');
+      
+      // For now, show "no results" state
+      // TODO: Implement actual results fetching from Supabase
+      setTimeout(() => {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('noResultsState').classList.remove('hidden');
+      }, 500);
+    }
+
+    // Demo function to show results (for testing)
+    function showDemoResults() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('noResultsState').classList.add('hidden');
+      document.getElementById('resultsContent').classList.remove('hidden');
+      
+      // Populate podium
+      document.getElementById('first-username').textContent = 'ProGamer123';
+      document.getElementById('first-points').textContent = '265 points';
+      document.getElementById('second-username').textContent = 'NinjaWarrior';
+      document.getElementById('second-points').textContent = '245 points';
+      document.getElementById('third-username').textContent = 'SpeedRunner42';
+      document.getElementById('third-points').textContent = '215 points';
+      
+      // Populate standings table
+      const tbody = document.getElementById('standingsTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td style="font-weight: 700; color: #FFD700;">🥇 1</td>
+          <td style="font-weight: 600;">ProGamer123</td>
+          <td style="color: #8DC63F; font-weight: 700;">265</td>
+          <td><span class="badge badge-success">Winner</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 700; color: #C0C0C0;">🥈 2</td>
+          <td style="font-weight: 600;">NinjaWarrior</td>
+          <td style="color: #8DC63F; font-weight: 700;">245</td>
+          <td><span class="badge badge-success">2nd Place</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: 700; color: #CD7F32;">🥉 3</td>
+          <td style="font-weight: 600;">SpeedRunner42</td>
+          <td style="color: #8DC63F; font-weight: 700;">215</td>
+          <td><span class="badge badge-success">3rd Place</span></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>CoolPlayer99</td>
+          <td style="color: #8DC63F; font-weight: 600;">180</td>
+          <td><span class="badge badge-info">Completed</span></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>EpicGamer777</td>
+          <td style="color: #8DC63F; font-weight: 600;">150</td>
+          <td><span class="badge badge-info">Completed</span></td>
+        </tr>
+      `;
+    }
+    
+    // Uncomment this line to test results display:
+    // showDemoResults();
+  </script>
+
+  <style>
+    .tournament-tab {
+      transition: all 0.3s ease;
+    }
+    
+    .tournament-tab.active {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tournois et compétitions organisés par Le Centre franco - Roblox, Kahoot, et plus encore!">
+  <meta name="keywords" content="tournoi, Le Centre franco, Roblox, Kahoot, jeux, compétition, éducation">
+  <meta name="author" content="Le Centre franco">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="Le Centre franco - Tournois et compétitions">
+  <meta property="og:description" content="Participez à nos tournois de Roblox, Kahoot, et plus encore!">
+  <meta property="og:type" content="website">
+  
+  <title>Le Centre franco - Tournois et compétitions</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo-only.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase Client (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="header-container">
+      <!-- Logo -->
+      <a href="index.html" class="logo-container" aria-label="Le Centre franco - Accueil">
+        <img src="assets/images/logo-only.png" alt="Le Centre franco logo" class="logo-img">
+        <div class="logo-text">
+          <h1 class="logo-title" data-i18n="header.title">Tournois et compétitions</h1>
+          <p class="logo-subtitle" data-i18n="header.subtitle">Le Centre franco</p>
+        </div>
+      </a>
+      
+      <!-- Navigation -->
+      <nav role="navigation" aria-label="Navigation principale">
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link" data-i18n="header.home">Accueil</a></li>
+          <li><a href="signup.html" class="nav-link" data-i18n="header.register">S'inscrire</a></li>
+          <li><a href="bracket.html" class="nav-link" data-i18n="header.brackets">Tableaux</a></li>
+          <li><a href="results.html" class="nav-link" data-i18n="header.results">Résultats</a></li>
+          <li>
+            <button id="langToggle" class="lang-toggle" aria-label="Changer la langue">EN</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" role="banner">
+    <div class="container">
+      <h1 data-i18n="landing.welcome">Bienvenue au Centre franco - Tournois et compétitions!</h1>
+      <p class="hero-tagline" data-i18n="landing.tagline">Centre franco-ontarien de ressources pédagogiques</p>
+      <p class="hero-intro" data-i18n="landing.intro">
+        Participez à nos tournois de Roblox, Kahoot, et plus encore! Rejoignez la compétition organisée par Le Centre franco.
+      </p>
+    </div>
+  </section>
+
+  <!-- Global countdown removed - each tournament has its own -->
+
+  <!-- TOURNAMENTS SECTION -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="tournament-grid">
+        
+        <!-- Tournament 1: RIVALS -->
+        <article class="tournament-card">
+          <h3 class="tournament-card-title" data-i18n="landing.tournament1Title">Tournoi 1: RIVALS</h3>
+          <p class="tournament-card-subtitle" data-i18n="landing.tournament1Subtitle">13-18 ans</p>
+          <p class="tournament-card-desc" data-i18n="landing.tournament1Desc">
+            Combat compétitif FPS sur Roblox
+          </p>
+          
+          <!-- Tournament Details -->
+          <div style="margin-bottom: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 8px;">
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">📱</span>
+              <strong data-i18n="landing.platformLabel">Plateforme</strong>: Roblox
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">📅</span>
+              <strong data-i18n="landing.dateLabel">Date</strong>: <span id="tournament1Date">À déterminer</span>
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">🕐</span>
+              <strong data-i18n="landing.timeLabel">Heure</strong>: <span id="tournament1Time">À déterminer</span>
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">🎮</span>
+              <strong data-i18n="landing.formatLabel">Format</strong>: <span id="tournament1Format" data-i18n="landing.tournament1Format">FFA / Élimination</span>
+            </p>
+          </div>
+          
+          <!-- Countdown Timer for Tournament 1 -->
+          <div id="countdown1Container" style="display: none; margin: 1rem 0; padding: 1rem; background: linear-gradient(135deg, #005CA9 0%, #004a8a 100%); border-radius: 8px; color: white; text-align: center;">
+            <p style="margin: 0 0 0.5rem 0; font-weight: 600; opacity: 0.9;">⏱️ <span data-i18n="landing.countdownTitle">Commence dans</span>:</p>
+            <div id="countdown1" style="display: flex; justify-content: center; gap: 0.75rem; font-family: 'Poppins', sans-serif;">
+              <div>
+                <span id="countdown1-days" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">j</span>
+              </div>
+              <div>
+                <span id="countdown1-hours" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">h</span>
+              </div>
+              <div>
+                <span id="countdown1-minutes" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">m</span>
+              </div>
+              <div>
+                <span id="countdown1-seconds" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">s</span>
+              </div>
+            </div>
+          </div>
+          
+          <a href="signup.html?tournament=pvp" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" data-i18n="landing.registerNow">S'inscrire maintenant</a>
+        </article>
+        
+        <!-- Tournament 2: Racing -->
+        <article class="tournament-card">
+          <h3 class="tournament-card-title" data-i18n="landing.tournament2Title">Tournoi 2: Course de voitures</h3>
+          <p class="tournament-card-subtitle" data-i18n="landing.tournament2Subtitle">Tous âges</p>
+          <p class="tournament-card-desc" data-i18n="landing.tournament2Desc">
+            Compétition de course rapide et excitante
+          </p>
+          
+          <!-- Tournament Details -->
+          <div style="margin-bottom: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 8px;">
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">📱</span>
+              <strong data-i18n="landing.platformLabel">Plateforme</strong>: Roblox
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">📅</span>
+              <strong data-i18n="landing.dateLabel">Date</strong>: <span id="tournament2Date">À déterminer</span>
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">🕐</span>
+              <strong data-i18n="landing.timeLabel">Heure</strong>: <span id="tournament2Time">À déterminer</span>
+            </p>
+            <p style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.25rem;">🎮</span>
+              <strong data-i18n="landing.formatLabel">Format</strong>: <span id="tournament2Format" data-i18n="landing.tournament2Format">Chronométré / Points</span>
+            </p>
+          </div>
+          
+          <!-- Countdown Timer for Tournament 2 -->
+          <div id="countdown2Container" style="display: none; margin: 1rem 0; padding: 1rem; background: linear-gradient(135deg, #8DC63F 0%, #7ab62f 100%); border-radius: 8px; color: white; text-align: center;">
+            <p style="margin: 0 0 0.5rem 0; font-weight: 600; opacity: 0.9;">⏱️ <span data-i18n="landing.countdownTitle">Commence dans</span>:</p>
+            <div id="countdown2" style="display: flex; justify-content: center; gap: 0.75rem; font-family: 'Poppins', sans-serif;">
+              <div>
+                <span id="countdown2-days" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">j</span>
+              </div>
+              <div>
+                <span id="countdown2-hours" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">h</span>
+              </div>
+              <div>
+                <span id="countdown2-minutes" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">m</span>
+              </div>
+              <div>
+                <span id="countdown2-seconds" style="font-size: 1.5rem; font-weight: 700;">00</span><span style="font-size: 0.75rem; opacity: 0.8;">s</span>
+              </div>
+            </div>
+          </div>
+          
+          <a href="signup.html?tournament=all-ages" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" data-i18n="landing.registerNow">S'inscrire maintenant</a>
+        </article>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- RULES SECTION -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center" data-i18n="landing.rulesTitle">Règlement</h2>
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <ul style="list-style: none; padding: 0;">
+            <li style="padding: 0.75rem 0; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 0.75rem;">
+              <span style="color: #8DC63F; font-size: 1.5rem;">✓</span>
+              <span data-i18n="landing.rulesAge">Confirmation d'âge requise</span>
+            </li>
+            <li style="padding: 0.75rem 0; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 0.75rem;">
+              <span style="color: #8DC63F; font-size: 1.5rem;">✓</span>
+              <span data-i18n="landing.rulesConduct">Conduite respectueuse obligatoire</span>
+            </li>
+            <li style="padding: 0.75rem 0; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 0.75rem;">
+              <span style="color: #8DC63F; font-size: 1.5rem;">✓</span>
+              <span data-i18n="landing.rulesNoCheat">Aucune triche ou exploit</span>
+            </li>
+            <li style="padding: 0.75rem 0; display: flex; align-items: center; gap: 0.75rem;">
+              <span style="color: #8DC63F; font-size: 1.5rem;">✓</span>
+              <span data-i18n="landing.rulesUsername">Nom d'utilisateur Roblox valide uniquement</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="text-center" data-i18n="landing.faqTitle">Questions fréquentes</h2>
+      <div style="max-width: 800px; margin: 2rem auto;">
+        
+        <details style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <summary style="font-weight: 600; cursor: pointer; color: #005CA9;" data-i18n="landing.faq1Q">Comment m'inscrire?</summary>
+          <p style="margin-top: 1rem; padding-left: 1rem; border-left: 3px solid #E6007E;" data-i18n="landing.faq1A">
+            Cliquez sur 'S'inscrire maintenant' et entrez votre nom d'utilisateur Roblox. Aucune information personnelle requise!
+          </p>
+        </details>
+        
+        <details style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <summary style="font-weight: 600; cursor: pointer; color: #005CA9;" data-i18n="landing.faq2Q">Dois-je installer quelque chose?</summary>
+          <p style="margin-top: 1rem; padding-left: 1rem; border-left: 3px solid #E6007E;" data-i18n="landing.faq2A">
+            Non! Tout se passe dans votre navigateur. Vous aurez seulement besoin de Roblox pour jouer.
+          </p>
+        </details>
+        
+        <details style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <summary style="font-weight: 600; cursor: pointer; color: #005CA9;" data-i18n="landing.faq3Q">Comment suivre les résultats?</summary>
+          <p style="margin-top: 1rem; padding-left: 1rem; border-left: 3px solid #E6007E;" data-i18n="landing.faq3A">
+            Les tableaux se mettent à jour en temps réel pendant le tournoi. Consultez simplement la page Tableaux!
+          </p>
+        </details>
+        
+        <details style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <summary style="font-weight: 600; cursor: pointer; color: #005CA9;" data-i18n="landing.faq4Q">Que se passe-t-il si je ne peux pas participer?</summary>
+          <p style="margin-top: 1rem; padding-left: 1rem; border-left: 3px solid #E6007E;" data-i18n="landing.faq4A">
+            Veuillez nous informer avant le tournoi si possible. Les absents seront disqualifiés après 5 minutes.
+          </p>
+        </details>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <img src="assets/images/logo-full.png" alt="Le Centre franco" class="footer-logo">
+      
+      <p style="margin: 1rem 0;" data-i18n="landing.footerOrg">Organisé par Le Centre franco</p>
+      
+      <nav aria-label="Navigation du pied de page">
+        <div class="footer-links">
+          <a href="mailto:info@lecentrefranco.ca" class="footer-link" data-i18n="landing.footerContact">Contact</a>
+          <a href="#privacy" class="footer-link" data-i18n="landing.footerPrivacy">Politique de confidentialité</a>
+          <a href="https://www.lecentrefranco.ca/" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="landing.footerAccessibility">Accessibilité</a>
+        </div>
+      </nav>
+      
+      <p class="footer-compliance" data-i18n="landing.footerCompliance">
+        Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.
+      </p>
+      
+      <p class="footer-copyright" data-i18n="landing.footerCopyright">
+        © Le Centre franco, 2026 – Tous droits réservés.
+      </p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/language.js"></script>
+  
+  <script>
+    // ============================================
+    // TOURNAMENT COUNTDOWN TIMERS
+    // ============================================
+    
+    // CONFIGURE YOUR TOURNAMENT DATES HERE:
+    // Format: new Date(YYYY, MM-1, DD, HH, MM, SS)
+    // Note: Months are 0-indexed (0=January, 1=February, etc.)
+    
+    // Tournament 1: RIVALS (13-18 ans) - March Break
+    const tournament1Config = {
+      date: new Date(2026, 2, 14, 14, 0, 0), // March 14, 2026, 2:00 PM (Saturday during March break)
+      dateDisplay: '14 mars 2026',           // French date display
+      dateDisplayEN: 'March 14, 2026',       // English date display
+      timeDisplay: '14h00 - 16h00'           // Time display
+    };
+    
+    // Tournament 2: Ultimate Driving (Tous âges)
+    const tournament2Config = {
+      date: new Date(2026, 3, 4, 10, 0, 0),  // April 4, 2026, 10:00 AM (Saturday)
+      dateDisplay: '4 avril 2026',           // French date display
+      dateDisplayEN: 'April 4, 2026',        // English date display
+      timeDisplay: '10h00 - 12h00'           // Time display
+    };
+    
+    // ============================================
+    // COUNTDOWN LOGIC (Don't modify unless needed)
+    // ============================================
+    
+    function updateCountdown(tournamentConfig, elementIds) {
+      const now = new Date().getTime();
+      const distance = tournamentConfig.date.getTime() - now;
+      
+      const container = document.getElementById(elementIds.container);
+      
+      if (distance < 0) {
+        // Tournament has started or passed
+        if (container) {
+          container.style.display = 'none';
+        }
+        return;
+      }
+      
+      // Show countdown container
+      if (container) {
+        container.style.display = 'block';
+      }
+      
+      // Calculate time units
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      // Update display
+      const daysEl = document.getElementById(elementIds.days);
+      const hoursEl = document.getElementById(elementIds.hours);
+      const minutesEl = document.getElementById(elementIds.minutes);
+      const secondsEl = document.getElementById(elementIds.seconds);
+      
+      if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+      if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+      if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+      if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+    
+    // Update date/time displays
+    function updateTournamentInfo() {
+      const currentLang = window.i18n ? window.i18n.currentLang : 'fr';
+      
+      // Tournament 1
+      const t1Date = document.getElementById('tournament1Date');
+      const t1Time = document.getElementById('tournament1Time');
+      
+      if (t1Date) t1Date.textContent = currentLang === 'fr' ? tournament1Config.dateDisplay : tournament1Config.dateDisplayEN;
+      if (t1Time) t1Time.textContent = tournament1Config.timeDisplay;
+      
+      // Tournament 2
+      const t2Date = document.getElementById('tournament2Date');
+      const t2Time = document.getElementById('tournament2Time');
+      
+      if (t2Date) t2Date.textContent = currentLang === 'fr' ? tournament2Config.dateDisplay : tournament2Config.dateDisplayEN;
+      if (t2Time) t2Time.textContent = tournament2Config.timeDisplay;
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      updateTournamentInfo();
+      
+      // Update countdowns every second
+      setInterval(() => {
+        updateCountdown(tournament1Config, {
+          container: 'countdown1Container',
+          days: 'countdown1-days',
+          hours: 'countdown1-hours',
+          minutes: 'countdown1-minutes',
+          seconds: 'countdown1-seconds'
+        });
+        
+        updateCountdown(tournament2Config, {
+          container: 'countdown2Container',
+          days: 'countdown2-days',
+          hours: 'countdown2-hours',
+          minutes: 'countdown2-minutes',
+          seconds: 'countdown2-seconds'
+        });
+      }, 1000);
+      
+      // Initial update
+      updateCountdown(tournament1Config, {
+        container: 'countdown1Container',
+        days: 'countdown1-days',
+        hours: 'countdown1-hours',
+        minutes: 'countdown1-minutes',
+        seconds: 'countdown1-seconds'
+      });
+      
+      updateCountdown(tournament2Config, {
+        container: 'countdown2Container',
+        days: 'countdown2-days',
+        hours: 'countdown2-hours',
+        minutes: 'countdown2-minutes',
+        seconds: 'countdown2-seconds'
+      });
+    });
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', updateTournamentInfo);
+  </script>
+</body>
+</html>

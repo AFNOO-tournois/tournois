@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tableaux et classements en direct - Le Centre franco">
+  <meta name="keywords" content="tournoi, tableaux, classement, Le Centre franco">
+  <meta name="author" content="Le Centre franco">
+  
+  <title>Tableaux - Le Centre franco</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo-only.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
+  
+  <!-- Supabase Client (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="header-container">
+      <!-- Logo -->
+      <a href="index.html" class="logo-container" aria-label="Le Centre franco - Accueil">
+        <img src="assets/images/logo-only.png" alt="Le Centre franco logo" class="logo-img">
+        <div class="logo-text">
+          <h1 class="logo-title" data-i18n="header.title">Tournois et compétitions</h1>
+          <p class="logo-subtitle" data-i18n="header.subtitle">Le Centre franco</p>
+        </div>
+      </a>
+      
+      <!-- Navigation -->
+      <nav role="navigation" aria-label="Navigation principale">
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link" data-i18n="header.home">Accueil</a></li>
+          <li><a href="signup.html" class="nav-link" data-i18n="header.register">S'inscrire</a></li>
+          <li><a href="bracket.html" class="nav-link" data-i18n="header.brackets">Tableaux</a></li>
+          <li><a href="results.html" class="nav-link" data-i18n="header.results">Résultats</a></li>
+          <li>
+            <button id="langToggle" class="lang-toggle" aria-label="Changer la langue">EN</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="section">
+    <div class="container">
+      
+      <!-- Page Title -->
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 data-i18n="bracket.title">Tableaux en direct</h1>
+        <p style="color: #666; font-size: 1.125rem;" id="lastUpdated">
+          <span data-i18n="bracket.lastUpdated">Dernière mise à jour</span>: <span id="updateTime">--:--</span>
+        </p>
+        <div style="margin-top: 1rem;">
+          <span class="badge badge-success" style="font-size: 1rem;">
+            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #8DC63F; margin-right: 0.5rem; animation: pulse 2s infinite;"></span>
+            <span data-i18n="bracket.liveUpdates">Mises à jour en direct</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Tournament Selection Tabs -->
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+        <button 
+          id="tab-pvp" 
+          class="btn btn-primary tournament-tab active" 
+          data-tournament="pvp"
+          style="min-width: 200px;"
+        >
+          🎮 RIVALS (13-18)
+        </button>
+        <button 
+          id="tab-racing" 
+          class="btn btn-secondary tournament-tab" 
+          data-tournament="all-ages"
+          style="min-width: 200px;"
+        >
+          🏁 <span data-i18n="landing.tournament2Title">Course de voitures</span>
+        </button>
+      </div>
+
+      <!-- Tournament Info Card -->
+      <div id="tournamentInfo" style="background: linear-gradient(135deg, #005CA9 0%, #004a8a 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+        <h2 id="tournamentName" style="color: white; margin-bottom: 0.5rem;">RIVALS</h2>
+        <p id="tournamentStatus" style="margin-bottom: 1rem; opacity: 0.9;">
+          <span class="badge badge-info" data-i18n="bracket.statusRegistration">Inscription ouverte</span>
+        </p>
+        <p id="participantCount" style="font-size: 1.25rem; margin: 0;">
+          <strong id="participantNumber">0</strong> <span data-i18n="bracket.participants">participants</span>
+        </p>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" style="text-align: center; padding: 3rem;">
+        <div class="loading" style="margin: 0 auto;"></div>
+        <p style="margin-top: 1rem; color: #666;" data-i18n="bracket.loading">Chargement des tableaux...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden" style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 12px;">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📋</p>
+        <h3 data-i18n="bracket.noParticipants">Aucun participant inscrit</h3>
+        <p style="color: #666; margin-bottom: 2rem;" data-i18n="bracket.waitingToStart">En attente du début du tournoi...</p>
+        <a href="signup.html" class="btn btn-primary" data-i18n="landing.registerNow">S'inscrire maintenant</a>
+      </div>
+
+      <!-- Participants List -->
+      <div id="participantsSection" class="hidden">
+        <h2 style="margin-bottom: 1.5rem;">
+          <span data-i18n="bracket.participants">Participants</span> 
+          (<span id="participantCountDisplay">0</span>)
+        </h2>
+        
+        <div id="participantsList" class="tournament-grid">
+          <!-- Participant cards will be inserted here -->
+        </div>
+      </div>
+
+      <!-- Leaderboard Section (for point-based tournaments) -->
+      <div id="leaderboardSection" class="hidden" style="margin-top: 3rem;">
+        <h2 style="margin-bottom: 1.5rem;" data-i18n="bracket.leaderboardTitle">Classement</h2>
+        
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="bracket.rank">Rang</th>
+                <th data-i18n="bracket.participant">Participant</th>
+                <th data-i18n="bracket.totalPoints">Points totaux</th>
+                <th data-i18n="bracket.round">Ronde</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <!-- Leaderboard rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bracket Section (for elimination tournaments) -->
+      <div id="bracketSection" class="hidden" style="margin-top: 3rem;">
+        <h2 style="margin-bottom: 1.5rem;">
+          <span data-i18n="bracket.currentRound">Ronde actuelle</span>: 
+          <span id="currentRound">1</span>
+        </h2>
+        
+        <div id="bracketDisplay">
+          <!-- Bracket visualization will be inserted here -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <img src="assets/images/logo-full.png" alt="Le Centre franco" class="footer-logo">
+      
+      <p style="margin: 1rem 0;" data-i18n="landing.footerOrg">Organisé par Le Centre franco</p>
+      
+      <nav aria-label="Navigation du pied de page">
+        <div class="footer-links">
+          <a href="mailto:info@lecentrefranco.ca" class="footer-link" data-i18n="landing.footerContact">Contact</a>
+          <a href="#privacy" class="footer-link" data-i18n="landing.footerPrivacy">Politique de confidentialité</a>
+          <a href="https://www.lecentrefranco.ca/" target="_blank" rel="noopener noreferrer" class="footer-link" data-i18n="landing.footerAccessibility">Accessibilité</a>
+        </div>
+      </nav>
+      
+      <p class="footer-compliance" data-i18n="landing.footerCompliance">
+        Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.
+      </p>
+      
+      <p class="footer-copyright" data-i18n="landing.footerCopyright">
+        © Le Centre franco, 2026 – Tous droits réservés.
+      </p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/language.js"></script>
+  <script src="js/bracket.js"></script>
+
+  <style>
+    /* Tournament Tab Styles */
+    .tournament-tab {
+      transition: all 0.3s ease;
+    }
+    
+    .tournament-tab.active {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Pulse animation for live indicator */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    /* Participant Card Styles */
+    .participant-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    
+    .participant-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .participant-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    
+    .participant-name {
+      font-weight: 600;
+      color: #005CA9;
+      margin-bottom: 0.5rem;
+    }
+    
+    .participant-status {
+      font-size: 0.875rem;
+      color: #666;
+    }
+  </style>
+
+</body>
+</html>
