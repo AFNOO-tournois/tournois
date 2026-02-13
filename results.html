@@ -333,10 +333,18 @@
         const bracketSectionEl = document.getElementById('bracketTreeSection');
         if (bracketSectionEl) bracketSectionEl.innerHTML = '';
 
-        // Head-to-head or mixed: podium/standings come from bracket, not FFA matches
+        // Head-to-head or mixed: podium from bracket; full standings from scoreboard (all participants + match points)
         if (bracketStyle === 'head-to-head' || bracketStyle === 'mixed') {
+          const { data: participants } = await supabase
+            .from('participants')
+            .select('*')
+            .eq('tournament_id', tournamentObj.id);
           await loadAndDisplayBracketOnResults(tournamentObj);
-          // If no bracket data, fall back to scoreboard from matches (mixed may have FFA rounds)
+          // Full standings = same as bracket page scoreboard: all participants, points from matches
+          if (participants && participants.length > 0) {
+            updateFullStandingsFromScoreboard(participants, matches || []);
+          }
+          // If no bracket data, fall back to full scoreboard display (mixed may have FFA only)
           if (matches && matches.length > 0) {
             const hasBracket = !!document.getElementById('bracketTreeSection')?.querySelector('.bracket-match');
             if (!hasBracket) displayScoreboardResults(matches, tournamentObj);
@@ -512,7 +520,7 @@
       document.getElementById('third-username').textContent = third?.username ?? '—';
       document.getElementById('third-points').textContent = third ? '—' : '— points';
 
-      // Full standings table
+      // Full standings table (bracket order; overwritten below by scoreboard when we have participants)
       const tbody = document.getElementById('standingsTableBody');
       tbody.innerHTML = leaderboard.map((p, i) => `
         <tr>
@@ -520,6 +528,36 @@
           <td style="font-weight: 600;">${escapeHtml(p.username)}</td>
           <td>—</td>
           <td style="font-weight: 700; color: #6ab04c;">${p.points}</td>
+        </tr>
+      `).join('');
+    }
+
+    /** Full standings from scoreboard: all participants, points from match.scores (same as bracket page). */
+    function updateFullStandingsFromScoreboard(participants, matches) {
+      const participantScores = {};
+      participants.forEach(p => {
+        participantScores[p.id] = { username: p.roblox_username || 'Unknown', totalPoints: 0, matchCount: 0 };
+      });
+      matches.forEach(match => {
+        const scores = match.scores && typeof match.scores === 'object' ? match.scores : {};
+        Object.entries(scores).forEach(([username, data]) => {
+          const participant = participants.find(px => px.roblox_username === username);
+          if (participant && participantScores[participant.id]) {
+            participantScores[participant.id].totalPoints += data?.points ?? 0;
+            participantScores[participant.id].matchCount++;
+          }
+        });
+      });
+      const leaderboard = Object.values(participantScores)
+        .sort((a, b) => b.totalPoints - a.totalPoints);
+      const tbody = document.getElementById('standingsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = leaderboard.map((p, i) => `
+        <tr>
+          <td style="font-weight: 700;">${i + 1}</td>
+          <td style="font-weight: 600;">${escapeHtml(p.username)}</td>
+          <td>${p.matchCount}</td>
+          <td style="font-weight: 700; color: #6ab04c;">${p.totalPoints}</td>
         </tr>
       `).join('');
     }
