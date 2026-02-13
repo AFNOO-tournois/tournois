@@ -456,7 +456,7 @@
       }
     }
 
-    /** Build podium and full standings from bracket (1st = final winner, 2nd = final loser, 3rd/4th = semi losers). */
+    /** Build podium and full standings from bracket (all rounds: final winner/loser, semi losers, quarter losers, etc.). */
     function updatePodiumAndStandingsFromBracket(bracketMatches) {
       document.getElementById('loadingState').classList.add('hidden');
       document.getElementById('noResultsState').classList.add('hidden');
@@ -469,32 +469,37 @@
       });
       const roundNumbers = Object.keys(rounds).map(Number).sort((a, b) => a - b);
       const finalRound = roundNumbers[roundNumbers.length - 1];
-      const semiRound = roundNumbers.length >= 2 ? roundNumbers[roundNumbers.length - 2] : null;
 
       const getUsername = (field) => getParticipantUsername(field) || '—';
       const leaderboard = [];
+      const seen = new Set();
+
+      const addIfNew = (username) => {
+        if (!username || username === '—' || seen.has(username)) return;
+        seen.add(username);
+        leaderboard.push({ username, points: leaderboard.length === 0 ? 1 : 0 });
+      };
 
       // Final: winner = 1st, loser = 2nd
       const finalMatches = rounds[finalRound] || [];
       const finalMatch = finalMatches.find(m => m.winner_id) || finalMatches[0];
       if (finalMatch) {
         const winnerName = getUsername(finalMatch.winner);
-        const loserId = finalMatch.winner_id === finalMatch.player1_id ? finalMatch.player2_id : finalMatch.player1_id;
         const loserName = finalMatch.winner_id === finalMatch.player1_id
           ? getUsername(finalMatch.player2) : getUsername(finalMatch.player1);
-        if (winnerName && winnerName !== '—') leaderboard.push({ rank: 1, username: winnerName, points: 1 });
-        if (loserName && loserName !== '—') leaderboard.push({ rank: 2, username: loserName, points: 0 });
+        addIfNew(winnerName);
+        addIfNew(loserName);
       }
 
-      // Semi losers = 3rd / 4th
-      if (semiRound != null) {
-        const semiMatches = rounds[semiRound] || [];
-        semiMatches.forEach(match => {
+      // All other rounds (semi, quarter, round-of-16, etc.): add losers in reverse round order (semi first, then quarter, ...)
+      for (let i = roundNumbers.length - 2; i >= 0; i--) {
+        const roundMatches = rounds[roundNumbers[i]] || [];
+        roundMatches.forEach(match => {
           const w = getUsername(match.winner);
           const p1 = getUsername(match.player1);
           const p2 = getUsername(match.player2);
           const loser = (w === p1 ? p2 : p1) || (p1 !== '—' ? p1 : p2);
-          if (loser && loser !== '—') leaderboard.push({ rank: leaderboard.length + 1, username: loser, points: 0 });
+          addIfNew(loser);
         });
       }
 
