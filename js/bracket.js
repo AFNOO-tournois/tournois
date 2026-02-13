@@ -479,8 +479,8 @@
     `;
     
     // Apply translations
-    if (window.i18n) {
-      window.i18n.applyTranslations();
+    if (typeof updateAllText === 'function') {
+      updateAllText();
     }
   }
 
