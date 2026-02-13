@@ -42,3 +42,14 @@ build/
 # Personal notes
 notes.txt
 TODO.txt
+
+# Documentation (keep locally, don't push to GitHub)
+README.md
+QUICK_START.md
+TROUBLESHOOTING.md
+PROJECT_COMPLETE.md
+DEPLOYMENT_CHECKLIST.md
+DYNAMIC_TOURNAMENT_PLAN.md
+CHANGELOG.md
+test-translation.html
+assets/images/README.md
