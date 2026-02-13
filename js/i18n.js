@@ -151,6 +151,12 @@ const translations = {
       participant: "participant",
       participants: "participants",
       
+      // Leaderboard
+      rank: "Rang",
+      rounds: "Rondes",
+      points: "Points",
+      tie: "ÉGALITÉ",
+      
       // Empty State
       noParticipants: "Aucun participant inscrit",
       waitingToStart: "En attente du début du tournoi...",
@@ -425,6 +431,12 @@ const translations = {
       nextMatch: "Next match in",
       participant: "participant",
       participants: "participants",
+      
+      // Leaderboard
+      rank: "Rank",
+      rounds: "Rounds",
+      points: "Points",
+      tie: "TIE",
       
       // Empty State
       noParticipants: "No participants registered",

@@ -213,11 +213,32 @@
         return;
       }
       
-      // Display participants
-      displayParticipants(participants);
+      // Get tournament object
+      const tournamentObj = tournaments.find(t => t.tournament_type === tournament);
+      if (!tournamentObj) {
+        displayParticipants(participants);
+        return;
+      }
+
+      // Fetch match results for leaderboard
+      const { data: matches, error: matchError } = await supabase
+        .from(TABLES.MATCHES)
+        .select('*')
+        .eq('tournament_id', tournamentObj.id);
+
+      if (matchError) {
+        console.error('Error fetching matches:', matchError);
+      }
+
+      // Calculate leaderboard if we have results
+      if (matches && matches.length > 0) {
+        displayLeaderboard(participants, matches);
+      } else {
+        // No results yet, show participant list
+        displayParticipants(participants);
+      }
       
       // Check if tournament has bracket style and load bracket
-      const tournamentObj = tournaments.find(t => t.tournament_type === tournament);
       if (tournamentObj && (tournamentObj.bracket_style === 'head-to-head' || tournamentObj.bracket_style === 'mixed')) {
         await loadAndDisplayBracketTree(tournamentObj);
       }
@@ -350,6 +371,106 @@
     `;
   }
   
+  function displayLeaderboard(participants, matches) {
+    hideLoading();
+    
+    // Update tournament info
+    updateTournamentInfo(participants);
+    
+    // Calculate total points per participant
+    const participantScores = {};
+    
+    participants.forEach(p => {
+      participantScores[p.id] = {
+        id: p.id,
+        username: p.roblox_username,
+        totalPoints: 0,
+        roundsPlayed: 0
+      };
+    });
+
+    matches.forEach(match => {
+      if (participantScores[match.participant_id]) {
+        participantScores[match.participant_id].totalPoints += match.points || 0;
+        participantScores[match.participant_id].roundsPlayed++;
+      }
+    });
+
+    // Convert to array and sort by points
+    const leaderboard = Object.values(participantScores)
+      .sort((a, b) => b.totalPoints - a.totalPoints);
+
+    // Assign ranks (handling ties)
+    let currentRank = 1;
+    leaderboard.forEach((player, index) => {
+      if (index > 0 && player.totalPoints === leaderboard[index - 1].totalPoints) {
+        // Tie - same rank as previous
+        player.rank = leaderboard[index - 1].rank;
+        player.isTied = true;
+      } else {
+        player.rank = currentRank;
+        player.isTied = false;
+      }
+      currentRank++;
+    });
+
+    // Show participants section
+    document.getElementById('participantsSection').classList.remove('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+
+    // Update counts
+    document.getElementById('participantCountDisplay').textContent = participants.length;
+    document.getElementById('participantNumber').textContent = participants.length;
+
+    // Generate leaderboard table
+    const participantsList = document.getElementById('participantsList');
+    participantsList.innerHTML = `
+      <div style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+        <table class="table" style="margin: 0;">
+          <thead>
+            <tr>
+              <th style="width: 80px; text-align: center;"><span data-i18n="bracket.rank">Rang</span></th>
+              <th><span data-i18n="bracket.participant">Participant</span></th>
+              <th style="width: 120px; text-align: center;"><span data-i18n="bracket.rounds">Rondes</span></th>
+              <th style="width: 120px; text-align: center;"><span data-i18n="bracket.points">Points</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leaderboard.map((player, index) => {
+              const rankDisplay = player.isTied && index > 0 && player.rank === leaderboard[index - 1].rank
+                ? `T${player.rank}`
+                : player.rank;
+              
+              const medalEmoji = player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : '';
+              
+              return `
+                <tr style="${player.rank <= 3 ? 'background: linear-gradient(to right, ' + (player.rank === 1 ? '#FFD70020' : player.rank === 2 ? '#C0C0C020' : '#CD7F3220') + ', transparent);' : ''}">
+                  <td style="text-align: center; font-weight: 700; font-size: 1.25rem; color: ${player.rank === 1 ? '#FFD700' : player.rank === 2 ? '#C0C0C0' : player.rank === 3 ? '#CD7F32' : '#666'};">
+                    ${medalEmoji} ${rankDisplay}${player.isTied ? '<sup style="font-size: 0.6rem; margin-left: 2px;" data-i18n="bracket.tie">TIE</sup>' : ''}
+                  </td>
+                  <td style="font-weight: 600; font-size: 1.125rem;">
+                    ${escapeHtml(player.username)}
+                  </td>
+                  <td style="text-align: center; color: #666;">
+                    ${player.roundsPlayed}
+                  </td>
+                  <td style="text-align: center; font-weight: 700; font-size: 1.25rem; color: #8DC63F;">
+                    ${player.totalPoints}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    
+    // Apply translations
+    if (window.i18n) {
+      window.i18n.applyTranslations();
+    }
+  }
+
   function displayParticipants(participants) {
     hideLoading();
     
