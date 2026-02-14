@@ -309,7 +309,14 @@
     if (error) {
       throw new Error('Registration error: ' + error.message);
     }
-    
+
+    // Fetch Roblox display name + avatar via Edge Function (updates participant row server-side)
+    supabase.functions.invoke('fetch-roblox-profile', {
+      body: { username: formData.robloxUsername, participant_id: data.id }
+    }).then(({ error: fnErr }) => {
+      if (fnErr) console.warn('Roblox profile fetch failed (optional):', fnErr);
+    }).catch(() => {});
+
     return {
       id: data.id.substring(0, 8).toUpperCase(),
       username: formData.robloxUsername,

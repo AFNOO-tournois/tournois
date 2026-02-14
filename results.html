@@ -450,9 +450,9 @@
           .from('bracket_matches')
           .select(`
             *,
-            player1:participants!bracket_matches_player1_id_fkey(roblox_username),
-            player2:participants!bracket_matches_player2_id_fkey(roblox_username),
-            winner:participants!bracket_matches_winner_id_fkey(roblox_username)
+            player1:participants!bracket_matches_player1_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+            player2:participants!bracket_matches_player2_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+            winner:participants!bracket_matches_winner_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url)
           `)
           .eq('tournament_id', tournament.id)
           .order('round_number', { ascending: true })
@@ -491,51 +491,103 @@
       const roundNumbers = Object.keys(rounds).map(Number).sort((a, b) => a - b);
       const finalRound = roundNumbers[roundNumbers.length - 1];
 
-      const getUsername = (field) => getParticipantUsername(field) || '—';
       const leaderboard = [];
       const seen = new Set();
 
-      const addIfNew = (username) => {
-        if (!username || username === '—' || seen.has(username)) return;
-        seen.add(username);
-        leaderboard.push({ username, points: leaderboard.length === 0 ? 1 : 0 });
+      const addIfNew = (display) => {
+        if (!display || !display.id || seen.has(display.id)) return;
+        seen.add(display.id);
+        leaderboard.push({
+          username: display.name || '—',
+          avatarUrl: display.avatarUrl || null,
+          points: leaderboard.length === 0 ? 1 : 0
+        });
       };
 
       // Final: winner = 1st, loser = 2nd
       const finalMatches = rounds[finalRound] || [];
       const finalMatch = finalMatches.find(m => m.winner_id) || finalMatches[0];
       if (finalMatch) {
-        const winnerName = getUsername(finalMatch.winner);
-        const loserName = finalMatch.winner_id === finalMatch.player1_id
-          ? getUsername(finalMatch.player2) : getUsername(finalMatch.player1);
-        addIfNew(winnerName);
-        addIfNew(loserName);
+        const winnerD = getParticipantDisplay(finalMatch.winner);
+        const loserD = finalMatch.winner_id === finalMatch.player1_id ? getParticipantDisplay(finalMatch.player2) : getParticipantDisplay(finalMatch.player1);
+        addIfNew(winnerD);
+        addIfNew(loserD);
       }
 
       // All other rounds (semi, quarter, round-of-16, etc.): add losers in reverse round order (semi first, then quarter, ...)
       for (let i = roundNumbers.length - 2; i >= 0; i--) {
         const roundMatches = rounds[roundNumbers[i]] || [];
         roundMatches.forEach(match => {
-          const w = getUsername(match.winner);
-          const p1 = getUsername(match.player1);
-          const p2 = getUsername(match.player2);
-          const loser = (w === p1 ? p2 : p1) || (p1 !== '—' ? p1 : p2);
+          const w = getParticipantDisplay(match.winner);
+          const p1 = getParticipantDisplay(match.player1);
+          const p2 = getParticipantDisplay(match.player2);
+          const loser = (w.id && p1.id && w.id === p1.id ? p2 : p1) || (p1.id ? p1 : p2);
           addIfNew(loser);
         });
       }
 
       // Podium
       const first = leaderboard[0], second = leaderboard[1], third = leaderboard[2];
-      document.getElementById('first-username').textContent = first?.username ?? '—';
+      const setPodiumSlot = (slot, entry) => {
+        const nameEl = document.getElementById(slot + '-username');
+        if (!nameEl) return;
+        nameEl.textContent = '';
+        if (entry?.avatarUrl) {
+          const img = document.createElement('img');
+          img.src = entry.avatarUrl;
+          img.alt = '';
+          img.className = 'participant-avatar';
+          nameEl.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'participant-avatar participant-avatar-placeholder';
+          placeholder.textContent = '🎮';
+          nameEl.appendChild(placeholder);
+        }
+        nameEl.appendChild(document.createTextNode(entry?.username ?? '—'));
+      };
+      setPodiumSlot('first', first);
       const firstPointsEl = document.getElementById('first-points');
       if (first && first.points) {
         firstPointsEl.innerHTML = '<span data-i18n="results.winner">Winner</span>';
       } else {
         firstPointsEl.textContent = first ? '—' : '— points';
       }
-      document.getElementById('second-username').textContent = second?.username ?? '—';
+      const secondNameEl = document.getElementById('second-username');
+      if (secondNameEl) {
+        secondNameEl.textContent = '';
+        if (second?.avatarUrl) {
+          const img = document.createElement('img');
+          img.src = second.avatarUrl;
+          img.alt = '';
+          img.className = 'participant-avatar';
+          secondNameEl.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'participant-avatar participant-avatar-placeholder';
+          placeholder.textContent = '🎮';
+          secondNameEl.appendChild(placeholder);
+        }
+        secondNameEl.appendChild(document.createTextNode(second?.username ?? '—'));
+      }
       document.getElementById('second-points').textContent = second ? '—' : '— points';
-      document.getElementById('third-username').textContent = third?.username ?? '—';
+      const thirdNameEl = document.getElementById('third-username');
+      if (thirdNameEl) {
+        thirdNameEl.textContent = '';
+        if (third?.avatarUrl) {
+          const img = document.createElement('img');
+          img.src = third.avatarUrl;
+          img.alt = '';
+          img.className = 'participant-avatar';
+          thirdNameEl.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'participant-avatar participant-avatar-placeholder';
+          placeholder.textContent = '🎮';
+          thirdNameEl.appendChild(placeholder);
+        }
+        thirdNameEl.appendChild(document.createTextNode(third?.username ?? '—'));
+      }
       document.getElementById('third-points').textContent = third ? '—' : '— points';
       if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
 
@@ -544,7 +596,7 @@
       tbody.innerHTML = leaderboard.map((p, i) => `
         <tr>
           <td style="font-weight: 700;">${i + 1}</td>
-          <td style="font-weight: 600;">${escapeHtml(p.username)}</td>
+          <td style="font-weight: 600;">${p.avatarUrl ? `<img src="${escapeHtml(p.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />` : AVATAR_PLACEHOLDER}<span class="player-name">${escapeHtml(p.username)}</span></td>
           <td>—</td>
           <td style="font-weight: 700; color: #6ab04c;">${p.points}</td>
         </tr>
@@ -590,7 +642,13 @@
 
       const pointsByParticipantId = {};
       participants.forEach(p => {
-        pointsByParticipantId[p.id] = { username: p.roblox_username || 'Unknown', totalPoints: 0 };
+        const displayName = (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username || 'Unknown';
+        pointsByParticipantId[p.id] = {
+          username: displayName,
+          avatarUrl: p.roblox_avatar_url || null,
+          roblox_username: p.roblox_username,
+          totalPoints: 0
+        };
       });
       matches.forEach(match => {
         const scores = match.scores && typeof match.scores === 'object' ? match.scores : {};
@@ -626,7 +684,7 @@
       tbody.innerHTML = leaderboard.map((p, i) => `
         <tr>
           <td style="font-weight: 700;">${i + 1}</td>
-          <td style="font-weight: 600;">${escapeHtml(p.username)}</td>
+          <td style="font-weight: 600;">${p.avatarUrl ? `<img src="${escapeHtml(p.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />` : AVATAR_PLACEHOLDER}<span class="player-name">${escapeHtml(p.username)}</span></td>
           <td style="font-weight: 700; color: #6ab04c;">${p.totalPoints}</td>
           <td><span class="badge ${p.madeElimination ? 'badge-success' : 'badge-info'}" data-i18n="${p.statusKey}">${escapeHtml(p.status)}</span></td>
         </tr>
@@ -724,10 +782,31 @@
       return p && p.roblox_username ? p.roblox_username : null;
     }
 
+    function getParticipantDisplay(participantField) {
+      if (!participantField) return { id: null, name: null, avatarUrl: null };
+      const p = Array.isArray(participantField) ? participantField[0] : participantField;
+      if (!p) return { id: null, name: null, avatarUrl: null };
+      const name = (p.roblox_display_name || p.roblox_username || '').trim() || null;
+      const avatarUrl = p.roblox_avatar_url || null;
+      return { id: p.id, name, avatarUrl };
+    }
+
+    const AVATAR_PLACEHOLDER = '<div class="participant-avatar participant-avatar-placeholder">🎮</div>';
+    function renderParticipantWithAvatar(display, fallback) {
+      const name = display.name || fallback || 'TBD';
+      const avatar = display.avatarUrl
+        ? `<img src="${escapeHtml(display.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />`
+        : AVATAR_PLACEHOLDER;
+      return `${avatar}<span class="player-name">${escapeHtml(name)}</span>`;
+    }
+
     function renderBracketMatchResults(match) {
-      const player1Name = getParticipantUsername(match.player1) || 'TBD';
-      const player2Name = getParticipantUsername(match.player2) || 'TBD';
-      const winnerName = getParticipantUsername(match.winner);
+      const p1 = getParticipantDisplay(match.player1);
+      const p2 = getParticipantDisplay(match.player2);
+      const winner = getParticipantDisplay(match.winner);
+      const player1Name = p1.name || 'TBD';
+      const player2Name = p2.name || 'TBD';
+      const winnerName = winner.name;
 
       const isCompleted = match.match_status === 'completed' || match.winner_id;
 
@@ -735,11 +814,11 @@
         <div class="bracket-match ${isCompleted ? 'completed' : ''}">
           <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}">
             ${match.player1_seed ? `<span class="player-seed">${match.player1_seed}</span>` : ''}
-            <span class="player-name">${player1Name}</span>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, 'TBD')}</span>
           </div>
           <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}">
             ${match.player2_seed ? `<span class="player-seed">${match.player2_seed}</span>` : ''}
-            <span class="player-name">${player2Name}</span>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, 'TBD')}</span>
           </div>
         </div>
       `;

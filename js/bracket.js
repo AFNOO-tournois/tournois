@@ -281,9 +281,9 @@
         .from('bracket_matches')
         .select(`
           *,
-          player1:participants!bracket_matches_player1_id_fkey(roblox_username),
-          player2:participants!bracket_matches_player2_id_fkey(roblox_username),
-          winner:participants!bracket_matches_winner_id_fkey(roblox_username)
+          player1:participants!bracket_matches_player1_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+          player2:participants!bracket_matches_player2_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+          winner:participants!bracket_matches_winner_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url)
         `)
         .eq('tournament_id', tournament.id)
         .order('round_number', { ascending: true })
@@ -391,10 +391,32 @@
     return p && p.roblox_username ? p.roblox_username : null;
   }
 
+  function getParticipantDisplay(participantField) {
+    if (!participantField) return { name: null, avatarUrl: null };
+    const p = Array.isArray(participantField) ? participantField[0] : participantField;
+    if (!p) return { name: null, avatarUrl: null };
+    const name = (p.roblox_display_name || p.roblox_username || '').trim() || null;
+    const avatarUrl = p.roblox_avatar_url || null;
+    return { name, avatarUrl };
+  }
+
+  const AVATAR_PLACEHOLDER = '<div class="participant-avatar participant-avatar-placeholder">🎮</div>';
+
+  function renderParticipantWithAvatar(display, fallback) {
+    const name = display.name || fallback || 'TBD';
+    const avatar = display.avatarUrl
+      ? `<img src="${escapeHtml(display.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />`
+      : AVATAR_PLACEHOLDER;
+    return `${avatar}<span class="player-name">${escapeHtml(name)}</span>`;
+  }
+
   function renderBracketMatch(match) {
-    const player1Name = getParticipantUsername(match.player1) || 'TBD';
-    const player2Name = getParticipantUsername(match.player2) || 'TBD';
-    const winnerName = getParticipantUsername(match.winner);
+    const p1 = getParticipantDisplay(match.player1);
+    const p2 = getParticipantDisplay(match.player2);
+    const winner = getParticipantDisplay(match.winner);
+    const player1Name = p1.name || 'TBD';
+    const player2Name = p2.name || 'TBD';
+    const winnerName = winner.name;
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
 
@@ -402,11 +424,11 @@
       <div class="bracket-match ${isCompleted ? 'completed' : ''}">
         <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}">
           ${match.player1_seed ? `<span class="player-seed">${match.player1_seed}</span>` : ''}
-          <span class="player-name">${player1Name}</span>
+          <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, 'TBD')}</span>
         </div>
         <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}">
           ${match.player2_seed ? `<span class="player-seed">${match.player2_seed}</span>` : ''}
-          <span class="player-name">${player2Name}</span>
+          <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, 'TBD')}</span>
         </div>
       </div>
     `;
@@ -463,7 +485,8 @@
     participants.forEach(p => {
       participantScores[p.id] = {
         id: p.id,
-        username: p.roblox_username,
+        username: (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username,
+        avatarUrl: p.roblox_avatar_url || null,
         totalPoints: 0,
         roundsPlayed: 0
       };
@@ -541,7 +564,8 @@
                     ${medalEmoji} ${rankDisplay}${player.isTied ? '<sup style="font-size: 0.6rem; margin-left: 2px;" data-i18n="bracket.tie">TIE</sup>' : ''}
                   </td>
                   <td style="font-weight: 600; font-size: 1.125rem;">
-                    ${escapeHtml(player.username)}
+                    ${player.avatarUrl ? `<img src="${escapeHtml(player.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />` : AVATAR_PLACEHOLDER}
+                    <span class="player-name">${escapeHtml(player.username)}</span>
                   </td>
                   <td style="text-align: center; color: #666;">
                     ${player.roundsPlayed}
@@ -588,13 +612,15 @@
   }
   
   function createParticipantCard(participant, number) {
+    const displayName = (participant.roblox_display_name || participant.roblox_username || '').trim() || participant.roblox_username;
+    const avatarHtml = participant.roblox_avatar_url
+      ? `<img src="${escapeHtml(participant.roblox_avatar_url)}" alt="" class="participant-avatar participant-avatar-img" loading="lazy" />`
+      : '<div class="participant-avatar participant-avatar-placeholder">🎮</div>';
     const card = document.createElement('div');
     card.className = 'participant-card';
     card.innerHTML = `
-      <div class="participant-avatar">
-        🎮
-      </div>
-      <div class="participant-name">${escapeHtml(participant.roblox_username)}</div>
+      ${avatarHtml}
+      <div class="participant-name">${escapeHtml(displayName)}</div>
       <div class="participant-status">
         #${number}
       </div>

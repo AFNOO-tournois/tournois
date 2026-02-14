@@ -614,9 +614,9 @@
         .from('bracket_matches')
         .select(`
           *,
-          player1:participants!bracket_matches_player1_id_fkey(roblox_username),
-          player2:participants!bracket_matches_player2_id_fkey(roblox_username),
-          winner:participants!bracket_matches_winner_id_fkey(roblox_username)
+          player1:participants!bracket_matches_player1_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+          player2:participants!bracket_matches_player2_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url),
+          winner:participants!bracket_matches_winner_id_fkey(roblox_username, roblox_display_name, roblox_avatar_url)
         `)
         .eq('tournament_id', currentTournament.id)
         .order('round_number', { ascending: true })
@@ -715,10 +715,36 @@
     return p && p.roblox_username ? p.roblox_username : null;
   }
 
+  function getParticipantDisplay(participantField) {
+    if (!participantField) return { name: null, avatarUrl: null };
+    const p = Array.isArray(participantField) ? participantField[0] : participantField;
+    if (!p) return { name: null, avatarUrl: null };
+    const name = (p.roblox_display_name || p.roblox_username || '').trim() || null;
+    const avatarUrl = p.roblox_avatar_url || null;
+    return { name, avatarUrl };
+  }
+
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return String(unsafe).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  const AVATAR_PLACEHOLDER = '<div class="participant-avatar participant-avatar-placeholder">🎮</div>';
+  function renderParticipantWithAvatar(display, fallback) {
+    const name = display.name || fallback || 'TBD';
+    const avatar = display.avatarUrl
+      ? `<img src="${escapeHtml(display.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />`
+      : AVATAR_PLACEHOLDER;
+    return `${avatar}<span class="player-name">${escapeHtml(name)}</span>`;
+  }
+
   function renderMatch(match) {
-    const player1Name = getParticipantUsername(match.player1) || 'TBD';
-    const player2Name = getParticipantUsername(match.player2) || 'TBD';
-    const winnerName = getParticipantUsername(match.winner);
+    const p1 = getParticipantDisplay(match.player1);
+    const p2 = getParticipantDisplay(match.player2);
+    const winner = getParticipantDisplay(match.winner);
+    const player1Name = p1.name || 'TBD';
+    const player2Name = p2.name || 'TBD';
+    const winnerName = winner.name;
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
     const canSelect = match.player1_id && match.player2_id && !isCompleted;
@@ -732,7 +758,7 @@
         <div style="margin-bottom: 0.5rem;">
           <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player1Name ? 'background: #6ab04c20;' : ''}">
             ${match.player1_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player1_seed}</span>` : ''}
-            <strong>${player1Name}</strong>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, 'TBD')}</span>
             ${winnerName === player1Name ? ' ✓' : ''}
           </div>
         </div>
@@ -742,7 +768,7 @@
         <div style="margin-bottom: 0.5rem;">
           <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player2Name ? 'background: #6ab04c20;' : ''}">
             ${match.player2_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player2_seed}</span>` : ''}
-            <strong>${player2Name}</strong>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, 'TBD')}</span>
             ${winnerName === player2Name ? ' ✓' : ''}
           </div>
         </div>
@@ -750,15 +776,15 @@
         ${canSelect ? `
           <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
             <button class="btn btn-primary select-winner-btn" data-match-id="${match.id}" data-winner-id="${match.player1_id}" style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">
-              ${player1Name} Wins
+              ${escapeHtml(player1Name)} Wins
             </button>
             <button class="btn btn-secondary select-winner-btn" data-match-id="${match.id}" data-winner-id="${match.player2_id}" style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">
-              ${player2Name} Wins
+              ${escapeHtml(player2Name)} Wins
             </button>
           </div>
         ` : isCompleted ? `
           <div style="margin-top: 1rem; text-align: center; color: #6ab04c; font-weight: 700;">
-            Winner: ${winnerName}
+            Winner: ${escapeHtml(winnerName)}
           </div>
         ` : `
           <div style="margin-top: 1rem; text-align: center; color: #999; font-style: italic;">

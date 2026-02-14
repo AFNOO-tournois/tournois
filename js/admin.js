@@ -262,7 +262,7 @@
       return `
       <tr>
         <td>${index + 1}</td>
-        <td style="font-weight: 600; color: #28724f;">${escapeHtml(p.roblox_username)}</td>
+        <td style="font-weight: 600; color: #28724f;">${p.roblox_avatar_url ? `<img src="${escapeHtml(p.roblox_avatar_url)}" alt="" class="participant-avatar" loading="lazy" />` : ''}<span class="player-name">${escapeHtml((p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username)}</span></td>
         <td>${escapeHtml(tournamentName)}</td>
         <td>${formatDate(p.signup_timestamp)}</td>
         <td>
@@ -381,10 +381,11 @@
     document.getElementById('resultsSaved').classList.add('hidden');
     
     const tbody = document.getElementById('resultsTableBody');
+    const displayName = (p) => (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username;
     tbody.innerHTML = participants.map((p, index) => `
       <tr>
         <td>${index + 1}</td>
-        <td style="font-weight: 600;">${escapeHtml(p.roblox_username)}</td>
+        <td style="font-weight: 600;">${p.roblox_avatar_url ? `<img src="${escapeHtml(p.roblox_avatar_url)}" alt="" class="participant-avatar" loading="lazy" />` : '<div class="participant-avatar participant-avatar-placeholder">🎮</div>'}<span class="player-name">${escapeHtml(displayName(p))}</span></td>
         <td>
           <input 
             type="number" 

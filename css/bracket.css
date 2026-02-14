@@ -108,6 +108,40 @@
   margin-right: 0.5rem;
 }
 
+/* Participant avatar (Roblox headshot or placeholder) - used in bracket, leaderboard, admin */
+.participant-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.participant-avatar-img.participant-avatar {
+  display: inline-block;
+}
+
+.participant-avatar-placeholder.participant-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: var(--cf-light-gray, #f0f4f2);
+  object-fit: unset;
+}
+
+.bracket-player-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bracket-player-inner .player-name {
+  padding-left: 0;
+}
+
 .bracket-empty {
   text-align: center;
   padding: 3rem;
