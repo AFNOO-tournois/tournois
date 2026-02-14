@@ -337,11 +337,15 @@
 
     Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).forEach(roundNum => {
       const roundMatches = rounds[roundNum];
+      const roundKey = getBracketRoundNameKey(parseInt(roundNum), totalRounds);
       const roundName = getBracketRoundName(parseInt(roundNum), totalRounds);
+      const roundTitleHtml = roundKey === 'bracket.round'
+        ? escapeHtml(roundName)
+        : `<span data-i18n="${roundKey}">${escapeHtml(roundName)}</span>`;
 
       html += `
         <div class="bracket-round">
-          <div class="bracket-round-title">${roundName}</div>
+          <div class="bracket-round-title">${roundTitleHtml}</div>
       `;
 
       roundMatches.forEach(match => {
@@ -357,6 +361,17 @@
     `;
 
     bracketSection.innerHTML = html;
+    if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
+  }
+
+  function getBracketRoundNameKey(roundNum, totalRounds) {
+    const remaining = totalRounds - roundNum + 1;
+    if (remaining === 1) return 'bracket.finals';
+    if (remaining === 2) return 'bracket.semifinals';
+    if (remaining === 3) return 'bracket.quarterFinals';
+    if (remaining === 4) return 'bracket.roundOf16';
+    if (remaining === 5) return 'bracket.roundOf32';
+    return 'bracket.round';
   }
 
   function getBracketRoundName(roundNum, totalRounds) {

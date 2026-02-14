@@ -657,11 +657,15 @@
 
     Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).forEach(roundNum => {
       const matches = rounds[roundNum];
+      const roundKey = getRoundNameKey(parseInt(roundNum), Object.keys(rounds).length);
       const roundName = getRoundName(parseInt(roundNum), Object.keys(rounds).length);
+      const roundTitleHtml = roundKey === 'bracket.round'
+        ? roundName
+        : `<span data-i18n="${roundKey}">${roundName}</span>`;
 
       html += `
         <div style="margin-bottom: 2rem;">
-          <h4 style="color: #28724f; margin-bottom: 1rem;">${roundName}</h4>
+          <h4 style="color: #28724f; margin-bottom: 1rem;">${roundTitleHtml}</h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
       `;
 
@@ -676,11 +680,22 @@
     });
 
     container.innerHTML = html;
+    if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
 
     // Add event listeners for winner selection
     document.querySelectorAll('.select-winner-btn').forEach(btn => {
       btn.addEventListener('click', handleSelectWinner);
     });
+  }
+
+  function getRoundNameKey(roundNum, totalRounds) {
+    const remaining = totalRounds - roundNum + 1;
+    if (remaining === 1) return 'bracket.finals';
+    if (remaining === 2) return 'bracket.semifinals';
+    if (remaining === 3) return 'bracket.quarterFinals';
+    if (remaining === 4) return 'bracket.roundOf16';
+    if (remaining === 5) return 'bracket.roundOf32';
+    return 'bracket.round';
   }
 
   function getRoundName(roundNum, totalRounds) {
