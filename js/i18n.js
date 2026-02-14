@@ -273,6 +273,8 @@ const translations = {
     // Common/Shared
     common: {
       loading: "Chargement...",
+      selectTournamentResults: "Choisissez le tournoi pour lequel vous voulez voir les résultats.",
+      selectTournamentBracket: "Choisissez le tournoi dont vous voulez voir le tableau.",
       error: "Erreur",
       success: "Succès",
       warning: "Attention",
@@ -569,6 +571,8 @@ const translations = {
     // Common/Shared
     common: {
       loading: "Loading...",
+      selectTournamentResults: "Select which tournament you want to see results for.",
+      selectTournamentBracket: "Select which tournament you want to see the bracket for.",
       error: "Error",
       success: "Success",
       warning: "Warning",

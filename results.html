@@ -65,6 +65,7 @@
       </div>
 
       <!-- Tournament Selection -->
+      <p class="tournament-select-label" style="text-align: center; color: #555; font-size: 1rem; margin-bottom: 0.75rem;" data-i18n="common.selectTournamentResults">Select which tournament you want to see results for.</p>
       <div id="tournamentTabs" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap;">
         <!-- Tournament tabs will be loaded dynamically -->
         <div style="text-align: center; padding: 1rem; color: #666;">
@@ -607,8 +608,8 @@
       const statusNoElim = t('results.statusDidNotMakeElimination');
 
       const leaderboard = [
-        ...inBracket.map(p => ({ ...p, status: statusElim })),
-        ...notInBracket.map(p => ({ ...p, status: statusNoElim }))
+        ...inBracket.map(p => ({ ...p, status: statusElim, statusKey: 'results.statusMadeElimination' })),
+        ...notInBracket.map(p => ({ ...p, status: statusNoElim, statusKey: 'results.statusDidNotMakeElimination' }))
       ];
 
       const tbody = document.getElementById('standingsTableBody');
@@ -618,7 +619,7 @@
           <td style="font-weight: 700;">${i + 1}</td>
           <td style="font-weight: 600;">${escapeHtml(p.username)}</td>
           <td style="font-weight: 700; color: #6ab04c;">${p.totalPoints}</td>
-          <td><span class="badge ${p.madeElimination ? 'badge-success' : 'badge-info'}">${escapeHtml(p.status)}</span></td>
+          <td><span class="badge ${p.madeElimination ? 'badge-success' : 'badge-info'}" data-i18n="${p.statusKey}">${escapeHtml(p.status)}</span></td>
         </tr>
       `).join('');
       if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
@@ -658,11 +659,15 @@
 
       Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).forEach(roundNum => {
         const roundMatches = rounds[roundNum];
+        const roundKey = getBracketRoundNameKey(parseInt(roundNum), totalRounds);
         const roundName = getBracketRoundName(parseInt(roundNum), totalRounds);
+        const roundTitleHtml = roundKey === 'bracket.round'
+          ? escapeHtml(roundName)
+          : `<span data-i18n="${roundKey}">${escapeHtml(roundName)}</span>`;
 
         html += `
           <div class="bracket-round">
-            <div class="bracket-round-title">${roundName}</div>
+            <div class="bracket-round-title">${roundTitleHtml}</div>
         `;
 
         roundMatches.forEach(match => {
@@ -681,6 +686,16 @@
       if (window.i18n && window.i18n.updateAllText) {
         window.i18n.updateAllText();
       }
+    }
+
+    function getBracketRoundNameKey(roundNum, totalRounds) {
+      const remaining = totalRounds - roundNum + 1;
+      if (remaining === 1) return 'bracket.finals';
+      if (remaining === 2) return 'bracket.semifinals';
+      if (remaining === 3) return 'bracket.quarterFinals';
+      if (remaining === 4) return 'bracket.roundOf16';
+      if (remaining === 5) return 'bracket.roundOf32';
+      return 'bracket.round';
     }
 
     function getBracketRoundName(roundNum, totalRounds) {
@@ -787,12 +802,16 @@
 
   <style>
     .tournament-tab {
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
+      opacity: 0.85;
     }
     
     .tournament-tab.active {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(40, 114, 79, 0.35);
+      border: 3px solid #28724f !important;
+      opacity: 1;
+      font-weight: 700;
     }
 
     /* Scoreboard-only: hide Status column */
@@ -806,19 +825,30 @@
     .podium-1st { order: 2; }
     .podium-3rd { order: 3; }
 
-    /* Mobile: stack in reading order 1st, 2nd, 3rd + center content */
+    /* Mobile: stack 1st, 2nd, 3rd + center content in viewport */
     @media (max-width: 768px) {
+      .results-page {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
+      }
       .results-page .results-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 100%;
-        padding-left: 1rem;
-        padding-right: 1rem;
       }
       .results-page .results-container > * {
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
       }
       .results-page #tournamentTabs {
         justify-content: center;
@@ -827,17 +857,25 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
+        max-width: 100%;
       }
       .results-page .podium-card {
         width: 100%;
         max-width: 320px;
         min-width: 0;
+        box-sizing: border-box;
       }
       .podium-1st { order: 1; }
       .podium-2nd { order: 2; }
       .podium-3rd { order: 3; }
       .results-page .podium-card.podium-1st {
         transform: none;
+      }
+      /* Force table/sections to not overflow and stay centered */
+      .results-page .table-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
     }
   </style>

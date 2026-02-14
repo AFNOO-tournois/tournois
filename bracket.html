@@ -73,7 +73,8 @@
         </div>
       </div>
 
-      <!-- Tournament Selection Tabs -->
+      <!-- Tournament Selection -->
+      <p class="tournament-select-label" style="text-align: center; color: #555; font-size: 1rem; margin-bottom: 0.75rem;" data-i18n="common.selectTournamentBracket">Select which tournament you want to see the bracket for.</p>
       <div id="tournamentTabs" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
         <!-- Tournament tabs will be loaded dynamically -->
         <div style="text-align: center; padding: 1rem; color: #666;">
@@ -206,12 +207,16 @@
   <style>
     /* Tournament Tab Styles */
     .tournament-tab {
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
+      opacity: 0.85;
     }
     
     .tournament-tab.active {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(40, 114, 79, 0.35);
+      border: 3px solid #28724f !important;
+      opacity: 1;
+      font-weight: 700;
     }
     
     /* Pulse animation for live indicator */
