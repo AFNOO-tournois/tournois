@@ -69,14 +69,14 @@ const translations = {
       rulesAge: "Confirmation d'âge requise",
       rulesConduct: "Conduite respectueuse obligatoire",
       rulesNoCheat: "Aucune triche ou exploit",
-      rulesUsername: "Nom d'utilisateur Roblox valide uniquement",
+      rulesUsername: "Nom d'utilisateur valide uniquement (selon la plateforme)",
       
       // FAQ Section
       faqTitle: "Questions fréquentes",
       faq1Q: "Comment m'inscrire?",
-      faq1A: "Cliquez sur 'S'inscrire maintenant' et entrez votre nom d'utilisateur Roblox. Aucune information personnelle requise!",
+      faq1A: "Cliquez sur « S'inscrire maintenant » et entrez votre nom d'utilisateur. Aucune information personnelle requise!",
       faq2Q: "Dois-je installer quelque chose?",
-      faq2A: "Non! Tout se passe dans votre navigateur. Vous aurez seulement besoin de Roblox pour jouer.",
+      faq2A: "Si vous vous inscrivez à un tournoi Roblox, vous devez avoir Roblox installé et un nom d'utilisateur Roblox valide. Tout le reste se fait dans votre navigateur.",
       faq3Q: "Comment suivre les résultats?",
       faq3A: "Les tableaux se mettent à jour en temps réel pendant le tournoi. Consultez simplement la page Tableaux!",
       faq4Q: "Que se passe-t-il si je ne peux pas participer?",
@@ -367,14 +367,14 @@ const translations = {
       rulesAge: "Age confirmation required",
       rulesConduct: "Respectful conduct mandatory",
       rulesNoCheat: "No cheating or exploits",
-      rulesUsername: "Valid Roblox username only",
+      rulesUsername: "Valid username only (for the tournament platform)",
       
       // FAQ Section
       faqTitle: "Frequently Asked Questions",
       faq1Q: "How do I register?",
-      faq1A: "Click 'Register Now' and enter your Roblox username. No personal information required!",
+      faq1A: "Click 'Register Now' and enter your username. No personal information required!",
       faq2Q: "Do I need to install anything?",
-      faq2A: "No! Everything happens in your browser. You'll only need Roblox to play the games.",
+      faq2A: "If you are joining a Roblox tournament, you need to have Roblox installed and a valid Roblox username. Everything else is done through your browser.",
       faq3Q: "How do I follow the results?",
       faq3A: "Brackets update in real-time during the tournament. Just check the Brackets page!",
       faq4Q: "What if I can't participate?",
@@ -413,8 +413,8 @@ const translations = {
       
       // Validation Messages
       errorRequired: "This field is required",
-      errorInvalidUsername: "Invalid Roblox username",
-      errorUserNotFound: "Roblox username not found. Check your spelling!",
+      errorInvalidUsername: "Invalid username",
+      errorUserNotFound: "Username not found. Check your spelling!",
       errorAlreadyRegistered: "You are already registered for this tournament",
       errorSelectTournament: "Please select a tournament",
       errorAgeConfirm: "You must confirm your age",
