@@ -71,6 +71,26 @@
   border-color: #6ab04c;
 }
 
+/* 3rd Place and Finals columns: same width and centered so the two match boxes align */
+.bracket-round-third,
+.bracket-round-final {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.bracket-round-third .bracket-round-matches,
+.bracket-round-final .bracket-round-matches {
+  justify-items: center;
+}
+
+.bracket-round-third .bracket-match,
+.bracket-round-final .bracket-match {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* 3rd Place column and match – clearly distinct from Finals */
 .bracket-round-third .bracket-round-title-third {
   color: #b8860b;
