@@ -151,10 +151,22 @@
   min-width: 0;
 }
 
-.leaderboard-rank-cell {
-  text-align: center;
-  vertical-align: middle;
-  min-height: 44px;
+.leaderboard-rank-td {
+  width: 100px;
+  min-width: 100px;
+}
+.leaderboard-rank-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.leaderboard-rank-inner .rank-tie-sup {
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-left: 0;
 }
 .rank-tie-sup {
   font-size: 0.6rem;

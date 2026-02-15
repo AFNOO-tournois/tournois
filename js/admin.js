@@ -435,10 +435,10 @@
     tbody.innerHTML = participants.map((p, index) => {
       const searchable = ((displayName(p) + ' ' + (p.roblox_username || '')).trim()).toLowerCase();
       return `
-      <tr data-search="${escapeHtml(searchable)}">
-        <td style="vertical-align:middle;padding:12px 16px;min-height:48px;">${index + 1}</td>
-        <td style="${ROW_CELL_STYLE}">${p.roblox_avatar_url ? `<img width="32" height="32" src="${escapeHtml(p.roblox_avatar_url)}" alt="" loading="lazy" style="${ROW_AVATAR_STYLE}" />` : `<div style="${ROW_PLACEHOLDER_STYLE}">🎮</div>`}<span style="${ROW_NAME_STYLE}">${escapeHtml(displayName(p))}</span></td>
-        <td style="vertical-align:middle;padding:12px 16px;min-height:48px;">
+      <tr data-search="${escapeHtml(searchable)}" style="height: 48px;">
+        <td style="vertical-align: middle; padding: 12px 16px; height: 48px; box-sizing: border-box;">${index + 1}</td>
+        <td style="${ROW_CELL_STYLE} height: 48px; box-sizing: border-box; max-height: 48px; overflow: hidden;">${p.roblox_avatar_url ? `<img width="32" height="32" src="${escapeHtml(p.roblox_avatar_url)}" alt="" loading="lazy" style="${ROW_AVATAR_STYLE}" />` : `<div style="${ROW_PLACEHOLDER_STYLE}">🎮</div>`}<span style="${ROW_NAME_STYLE}">${escapeHtml(displayName(p))}</span></td>
+        <td style="vertical-align: middle; padding: 12px 16px; height: 48px; box-sizing: border-box;">
           <input 
             type="number" 
             class="placement-input" 
@@ -449,7 +449,7 @@
             max="${participants.length}"
           >
         </td>
-        <td style="vertical-align:middle;padding:12px 16px;min-height:48px;">
+        <td style="vertical-align: middle; padding: 12px 16px; height: 48px; box-sizing: border-box;">
           <span class="points-display" data-points-for="${p.id}">-</span>
         </td>
       </tr>

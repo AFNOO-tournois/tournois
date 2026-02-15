@@ -408,9 +408,9 @@
     return { name, avatarUrl };
   }
 
-  const ROW_AVATAR_STYLE = 'width:32px;height:32px;min-width:32px;min-height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,0,0,0.1);box-sizing:border-box;display:block;flex-shrink:0';
+  const ROW_AVATAR_STYLE = 'width:32px;height:32px;min-width:32px;min-height:32px;max-width:32px;max-height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(0,0,0,0.1);box-sizing:border-box;display:block;flex-shrink:0';
   const ROW_PLACEHOLDER_STYLE = 'width:32px;height:32px;min-width:32px;min-height:32px;border-radius:50%;border:2px solid rgba(0,0,0,0.1);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;font-size:1rem;background:#e8ece9;flex-shrink:0';
-  const ROW_CELL_STYLE = 'vertical-align:middle;padding:12px 16px;min-height:48px;display:flex;align-items:center;gap:8px;';
+  const ROW_CELL_STYLE = 'vertical-align:middle;padding:12px 16px;height:48px;max-height:48px;overflow:hidden;display:flex;align-items:center;gap:8px;box-sizing:border-box;';
   const ROW_NAME_STYLE = 'font-size:1rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;min-width:0;';
   const AVATAR_PLACEHOLDER = `<div style="${ROW_PLACEHOLDER_STYLE}">🎮</div>`;
 
@@ -558,7 +558,7 @@
         <table class="table" style="margin: 0;">
           <thead>
             <tr>
-              <th style="width: 80px; text-align: center;"><span data-i18n="bracket.rank">Rang</span></th>
+              <th style="width: 100px; min-width: 100px; text-align: center;"><span data-i18n="bracket.rank">Rang</span></th>
               <th><span data-i18n="bracket.participant">Participant</span></th>
               <th style="width: 120px; text-align: center;"><span data-i18n="bracket.rounds">Rondes</span></th>
               <th style="width: 120px; text-align: center;"><span data-i18n="bracket.points">Points</span></th>
@@ -573,18 +573,18 @@
               const rowBg = player.rank === 1 ? 'background: linear-gradient(to right, #FFD70022, transparent);' : player.rank === 2 ? 'background: linear-gradient(to right, #C0C0C022, transparent);' : player.rank === 3 ? 'background: linear-gradient(to right, #CD7F3222, transparent);' : 'background: #fafafa;';
               const rankColor = player.rank === 1 ? '#b8860b' : player.rank === 2 ? '#6c757d' : player.rank === 3 ? '#cd7f32' : '#333';
               return `
-                <tr style="${rowBg}">
-                  <td style="text-align: center; vertical-align: middle; padding: 12px 16px; min-height: 48px; color: ${rankColor}; font-weight: 700; font-size: 1.125rem;">
-                    ${medalEmoji} ${rankLabel}${tieSup}
+                <tr style="${rowBg} height: 48px;">
+                  <td class="leaderboard-rank-td" style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; color: ${rankColor}; font-weight: 700; font-size: 1.125rem; box-sizing: border-box;">
+                    <span class="leaderboard-rank-inner">${medalEmoji} ${rankLabel}${tieSup}</span>
                   </td>
                   <td style="${ROW_CELL_STYLE}">
                     ${player.avatarUrl ? `<img width="32" height="32" src="${escapeHtml(player.avatarUrl)}" alt="" loading="lazy" style="${ROW_AVATAR_STYLE}" />` : AVATAR_PLACEHOLDER}
                     <span style="${ROW_NAME_STYLE}">${escapeHtml(player.username)}</span>
                   </td>
-                  <td style="text-align: center; vertical-align: middle; padding: 12px 16px; min-height: 48px; color: #666;">
+                  <td style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; color: #666; box-sizing: border-box;">
                     ${player.roundsPlayed}
                   </td>
-                  <td style="text-align: center; vertical-align: middle; padding: 12px 16px; min-height: 48px; font-weight: 700; font-size: 1.25rem; color: #6ab04c;">
+                  <td style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; font-weight: 700; font-size: 1.25rem; color: #6ab04c; box-sizing: border-box;">
                     ${player.totalPoints}
                   </td>
                 </tr>
