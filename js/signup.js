@@ -313,15 +313,8 @@
       throw new Error('Registration error: ' + error.message);
     }
 
-    // Fetch Roblox display name + avatar only when this tournament's platform is Roblox
-    const isRoblox = formData.gamePlatform === 'roblox';
-    if (isRoblox) {
-      supabase.functions.invoke('fetch-roblox-profile', {
-        body: { username: formData.robloxUsername, participant_id: data.id }
-      }).then(({ error: fnErr }) => {
-        if (fnErr) console.warn('Roblox profile fetch failed (optional):', fnErr);
-      }).catch(() => {});
-    }
+    // Roblox display name + avatar are filled by Database Webhook (participants INSERT)
+    // calling fetch-roblox-profile server-side — no browser call, so no CORS.
 
     return {
       id: data.id.substring(0, 8).toUpperCase(),
