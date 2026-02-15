@@ -253,7 +253,7 @@
       
       if (!participants || participants.length === 0) {
         console.warn('⚠️ No participants found for tournament_id:', tournamentObj.id);
-        showEmpty();
+        showEmpty(tournamentObj);
         return;
       }
       
@@ -918,11 +918,23 @@
     document.getElementById('loadingState').classList.add('hidden');
   }
   
-  function showEmpty() {
+  function showEmpty(tournament) {
     hideLoading();
-    document.getElementById('emptyState').classList.remove('hidden');
+    const el = document.getElementById('emptyState');
+    el.classList.remove('hidden');
     document.getElementById('participantsSection').classList.add('hidden');
     document.getElementById('participantNumber').textContent = '0';
+    const t = (window.i18n && window.i18n.t) ? window.i18n.t.bind(window.i18n) : (k) => k;
+    const noParticipants = t('bracket.noParticipants');
+    const registrationStillOpen = !tournament || tournament.status === 'published';
+    const subtitle = registrationStillOpen ? t('bracket.waitingToStart') : t('bracket.registrationClosedEmpty');
+    const buttonHtml = registrationStillOpen ? `<a href="signup.html" class="btn btn-primary">${escapeHtml(t('landing.registerNow'))}</a>` : '';
+    el.innerHTML = `
+      <p style="font-size: 3rem; margin-bottom: 1rem;">📋</p>
+      <h3>${escapeHtml(noParticipants)}</h3>
+      <p style="color: #666; margin-bottom: 2rem;">${escapeHtml(subtitle)}</p>
+      ${buttonHtml}
+    `;
   }
   
   function updateTimestamp() {

@@ -172,6 +172,7 @@ const translations = {
       // Empty State
       noParticipants: "Aucun participant inscrit",
       waitingToStart: "En attente du début du tournoi...",
+      registrationClosedEmpty: "Inscriptions fermées.",
       
       // Leaderboard
       leaderboardTitle: "Classement",
@@ -478,6 +479,7 @@ const translations = {
       // Empty State
       noParticipants: "No participants registered",
       waitingToStart: "Waiting for tournament to start...",
+      registrationClosedEmpty: "Registration closed.",
       
       // Leaderboard
       leaderboardTitle: "Leaderboard",

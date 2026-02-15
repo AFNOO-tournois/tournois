@@ -287,20 +287,10 @@
       }
       
       let list = participants || [];
-      // Auto-split into groups when this tournament has max_participants_per_group set and we're viewing one tournament
+      // Auto-split runs on signup only (runAutoSplitAndSave). Do NOT run it here on every load - it does one UPDATE per participant and causes ~10s delay when switching tournaments.
+      // Auto-close registration when count reaches max_participants (single update, fast)
       if (filterTournament !== 'all' && list.length > 0) {
         const tournament = adminTournaments.find(t => t.id === filterTournament);
-        const maxPerGroup = tournament && tournament.max_participants_per_group != null ? parseInt(tournament.max_participants_per_group, 10) : null;
-        if (maxPerGroup && maxPerGroup >= 1) {
-          const updated = await runAutoSplitAndSave(filterTournament, list, maxPerGroup);
-          if (updated) {
-            list = list.map(p => {
-              const u = updated.find(x => x.id === p.id);
-              return u ? { ...p, group_number: u.group_number } : p;
-            });
-          }
-        }
-        // Auto-close registration when participant count reaches max_participants
         const maxParticipants = tournament && tournament.max_participants != null ? parseInt(tournament.max_participants, 10) : null;
         if (maxParticipants != null && list.length >= maxParticipants && tournament.status !== 'at_capacity') {
           const { error: statusErr } = await supabase.from('tournaments').update({ status: 'at_capacity' }).eq('id', filterTournament);
