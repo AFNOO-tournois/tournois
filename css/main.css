@@ -600,9 +600,15 @@ a:focus-visible {
   padding: 12px var(--spacing-md);
   border-bottom: 1px solid #E0E0E0;
   vertical-align: middle;
+  box-sizing: border-box;
+}
+.table tbody tr {
+  height: 48px;
 }
 .table tbody td {
+  height: 48px;
   min-height: 48px;
+  max-height: 48px;
   box-sizing: border-box;
 }
 
