@@ -279,14 +279,9 @@
       return;
     }
 
-    // Calculate actual bracket size (next power of 2)
-    const actualBracketSize = Math.pow(2, Math.ceil(Math.log2(desiredBracketSize)));
-    const byesNeeded = actualBracketSize - desiredBracketSize;
-
     if (!confirm(`Generate bracket with TOP ${desiredBracketSize} players?\n\n` +
       `Total participants: ${totalParticipants}\n` +
-      `Advancing to bracket: ${desiredBracketSize}\n` +
-      `Bracket size: ${actualBracketSize} (${byesNeeded} bye${byesNeeded === 1 ? '' : 's'})`)) {
+      `Round 1: ${Math.ceil(desiredBracketSize / 2)} match${Math.ceil(desiredBracketSize / 2) === 1 ? '' : 'es'} (1 vs ${desiredBracketSize}, 2 vs ${desiredBracketSize - 1}, etc.)`)) {
       return;
     }
 
@@ -303,8 +298,8 @@
     
     console.log(`Selected top ${topPlayers.length} players for bracket:`, topPlayers.map(p => p.roblox_username));
 
-    // Generate bracket structure with byes
-    const matches = createBracketStructure(topPlayers, actualBracketSize);
+    // Generate bracket: N players, no padding. Round 1 = 1 vs N, 2 vs N-1, 3 vs N-2, ...
+    const matches = createBracketStructure(topPlayers, desiredBracketSize);
 
     // Save to database
     await saveBracketMatches(matches);
@@ -313,7 +308,7 @@
     await checkBracketExists();
     await loadAndDisplayBracket();
 
-    alert(`✓ Bracket generated successfully!\n\nTop ${desiredBracketSize} of ${totalParticipants} participants advanced\nBracket size: ${actualBracketSize} (${byesNeeded} bye${byesNeeded === 1 ? '' : 's'})`);
+    alert(`✓ Bracket generated successfully!\n\nTop ${desiredBracketSize} of ${totalParticipants} participants\nRound 1: ${Math.ceil(desiredBracketSize / 2)} match${Math.ceil(desiredBracketSize / 2) === 1 ? '' : 'es'}`);
   }
 
   async function getSeededParticipants(bracketSize, method) {
@@ -399,30 +394,30 @@
     return shuffled;
   }
 
-  function createBracketStructure(seededParticipants, bracketSize) {
+  /**
+   * Create bracket for N players (no padding to power of 2).
+   * Round 1: 1 vs N, 2 vs N-1, 3 vs N-2, ... (ceil(N/2) matches). If N odd, middle seed gets a bye.
+   * Later rounds: normal tree; if round 1 has odd winners, one gets a bye to the final.
+   */
+  function createBracketStructure(seededParticipants, numPlayers) {
     const matches = [];
-    const rounds = Math.log2(bracketSize);
+    const n = numPlayers;
+    const M1 = Math.ceil(n / 2); // round 1 match count
 
-    // Pad seededParticipants with nulls for bye rounds
-    const paddedParticipants = [...seededParticipants];
-    while (paddedParticipants.length < bracketSize) {
-      paddedParticipants.push(null);
-    }
+    // Round 1: match i has seed i vs seed n+1-i (1-based). If n odd and i = (n+1)/2, then seed i vs bye.
+    for (let i = 1; i <= M1; i++) {
+      const seed1 = i;
+      const seed2 = n + 1 - i;
+      const isBye = seed1 === seed2; // only when n is odd and i is middle
+      const player1 = seed1 <= n ? seededParticipants[seed1 - 1] : null;
+      const player2 = !isBye && seed2 <= n ? seededParticipants[seed2 - 1] : null;
 
-    // Round 1: Pair up seeded players (including byes)
-    const round1Matches = bracketSize / 2;
-    const pairings = createSeedPairings(bracketSize);
-
-    for (let i = 0; i < round1Matches; i++) {
-      const pairing = pairings[i];
-      const player1 = paddedParticipants[pairing[0] - 1];
-      const player2 = paddedParticipants[pairing[1] - 1];
-
-      // If one player is null (bye), automatically advance the other
       let matchStatus = 'pending';
       let winnerId = null;
-      
-      if (!player1 && player2) {
+      if (isBye && player1) {
+        matchStatus = 'completed';
+        winnerId = player1.id;
+      } else if (!player1 && player2) {
         matchStatus = 'completed';
         winnerId = player2.id;
       } else if (player1 && !player2) {
@@ -432,7 +427,7 @@
 
       matches.push({
         round_number: 1,
-        match_number: i + 1,
+        match_number: i,
         player1_id: player1 ? player1.id : null,
         player2_id: player2 ? player2.id : null,
         player1_seed: player1 ? player1.seed : null,
@@ -442,15 +437,15 @@
       });
     }
 
-    // Create placeholder matches for subsequent rounds
-    let currentRoundMatches = round1Matches;
-    for (let round = 2; round <= rounds; round++) {
-      const matchesInRound = currentRoundMatches / 2;
-      
-      for (let i = 0; i < matchesInRound; i++) {
+    // Build subsequent rounds: W winners from previous, floor(W/2) matches, W % 2 byes to next round
+    let W = M1;
+    let round = 2;
+    while (W > 1) {
+      const matchesInRound = Math.floor(W / 2);
+      for (let i = 1; i <= matchesInRound; i++) {
         matches.push({
           round_number: round,
-          match_number: i + 1,
+          match_number: i,
           player1_id: null,
           player2_id: null,
           player1_seed: null,
@@ -459,28 +454,39 @@
           match_status: 'pending'
         });
       }
-
-      currentRoundMatches = matchesInRound;
+      W = matchesInRound + (W % 2); // winners from matches + bye(s)
+      round++;
     }
 
-    // Link matches (next_match_id)
     linkMatches(matches);
-
-    // Advance round 1 bye winners (and any completed winners) into their next-round slots
     advanceWinnersIntoNextRound(matches);
 
     return matches;
   }
 
-  /** For each round 1 match that has a winner (e.g. bye), fill the corresponding slot in the round 2 match. */
+  /** Fill next-round slots for every round 1 match that has a winner (including bye). Handles bye-to-final. */
   function advanceWinnersIntoNextRound(matches) {
-    const round1Matches = matches.filter(m => m.round_number === 1);
+    const round1Matches = matches.filter(m => m.round_number === 1).sort((a, b) => a.match_number - b.match_number);
+    const M1 = round1Matches.length;
+    const M2 = Math.floor(M1 / 2); // round 2 match count; first 2*M2 R1 matches feed R2
+    const hasByeToFinal = M1 % 2 === 1;
+
     round1Matches.forEach(r1Match => {
       if (!r1Match.winner_id) return;
-      const nextMatchNumber = Math.ceil(r1Match.match_number / 2);
-      const nextMatch = matches.find(m => m.round_number === 2 && m.match_number === nextMatchNumber);
+      const i = r1Match.match_number;
+
+      if (hasByeToFinal && i === M1) {
+        // This winner has a bye to the final (last round)
+        const finalMatch = matches.filter(m => m.round_number === Math.max(...matches.map(x => x.round_number))).find(m => m.match_number === 1);
+        if (finalMatch) finalMatch.player2_id = r1Match.winner_id;
+        return;
+      }
+
+      const nextMatchNumber = Math.ceil(i / 2);
+      const nextRound = 2;
+      const nextMatch = matches.find(m => m.round_number === nextRound && m.match_number === nextMatchNumber);
       if (!nextMatch) return;
-      const isPlayer1Slot = r1Match.match_number % 2 === 1;
+      const isPlayer1Slot = i % 2 === 1;
       if (isPlayer1Slot) {
         nextMatch.player1_id = r1Match.winner_id;
       } else {
@@ -489,28 +495,35 @@
     });
   }
 
-  function createSeedPairings(bracketSize) {
-    // Standard tournament seeding: 1 vs last, 2 vs second-to-last, etc.
-    const pairings = [];
-    for (let i = 0; i < bracketSize / 2; i++) {
-      pairings.push([i + 1, bracketSize - i]);
-    }
-    return pairings;
-  }
-
   function linkMatches(matches) {
-    // Link each match to its next match
-    matches.forEach((match, index) => {
+    const round1Matches = matches.filter(m => m.round_number === 1);
+    const M1 = round1Matches.length;
+    const M2 = Math.floor(M1 / 2);
+    const hasByeToFinal = M1 % 2 === 1;
+    const maxRound = Math.max(...matches.map(m => m.round_number));
+
+    matches.forEach((match) => {
       const round = match.round_number;
       const matchNum = match.match_number;
 
-      // Find next round match
+      // Round 1: first 2*M2 matches feed round 2; last match (if bye) feeds final
+      if (round === 1) {
+        if (hasByeToFinal && matchNum === M1) {
+          const finalMatch = matches.find(m => m.round_number === maxRound && m.match_number === 1);
+          if (finalMatch) match.next_match_id = finalMatch.id || `temp_${maxRound}_1`;
+        } else {
+          const nextMatchNumber = Math.ceil(matchNum / 2);
+          const nextMatch = matches.find(m => m.round_number === 2 && m.match_number === nextMatchNumber);
+          if (nextMatch) match.next_match_id = nextMatch.id || `temp_2_${nextMatchNumber}`;
+        }
+        return;
+      }
+
+      // Other rounds: standard tree
       const nextRoundMatches = matches.filter(m => m.round_number === round + 1);
       if (nextRoundMatches.length > 0) {
-        // Determine which match in next round
         const nextMatchNumber = Math.ceil(matchNum / 2);
         const nextMatch = nextRoundMatches.find(m => m.match_number === nextMatchNumber);
-        
         if (nextMatch) {
           match.next_match_id = nextMatch.id || `temp_${round + 1}_${nextMatchNumber}`;
         }
