@@ -147,15 +147,9 @@
         <!-- TAB 2: ENTER RESULTS -->
         <div id="tab-results" class="admin-tab-content hidden">
           <h2 style="margin-bottom: 1rem;">Enter Tournament Results</h2>
-          <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-            <button type="button" class="btn btn-primary" id="btnEnterNewResults">Enter New Results</button>
-            <button type="button" class="btn btn-secondary" id="btnEditExistingResults">Edit Existing Results</button>
-          </div>
 
-          <!-- ENTER NEW RESULTS (tournament + round + load + entry form) -->
-          <div id="resultsNewPanel">
-          <!-- Tournament Selection -->
-          <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+          <!-- Tournament selection first (shared by both Enter New and Edit Existing) -->
+          <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
             <div class="form-group">
               <label class="form-label">Select Tournament</label>
               <select id="resultsTournament" class="form-select">
@@ -164,12 +158,20 @@
                 <option value="all-ages">Racing (All Ages)</option>
               </select>
             </div>
-            
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button type="button" class="btn btn-primary" id="btnEnterNewResults">Enter New Results</button>
+            <button type="button" class="btn btn-secondary" id="btnEditExistingResults">Edit Existing Results</button>
+          </div>
+
+          <!-- ENTER NEW RESULTS (round + load + entry form) -->
+          <div id="resultsNewPanel">
+          <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
             <div class="form-group">
               <label class="form-label">Round Number</label>
               <input type="number" id="resultsRound" class="form-input" value="1" min="1" max="10">
             </div>
-            
             <button class="btn btn-primary" id="loadResultsBtn">Load Participants</button>
           </div>
 
@@ -222,16 +224,20 @@
           <!-- EDIT EXISTING RESULTS -->
           <div id="existingResultsContainer" class="hidden" style="margin-top: 0;">
             <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3>Existing Results</h3>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                  <label class="form-label" style="margin: 0;">Filter by Round:</label>
-                  <select id="filterRound" class="form-select" style="width: auto;">
-                    <option value="all">All Rounds</option>
-                  </select>
+              <p id="existingResultsNoTournament" class="hidden" style="padding: 1.5rem; background: #fff3e0; border-radius: 8px; color: #e65100;">
+                Select a tournament above to view or edit existing results.
+              </p>
+              <div id="existingResultsContent" class="hidden">
+                <p style="margin-bottom: 1rem; font-weight: 600;">Tournament: <span id="existingResultsTournamentName">—</span></p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <label class="form-label" style="margin: 0;">Filter by Round:</label>
+                    <select id="filterRound" class="form-select" style="width: auto;">
+                      <option value="all">All Rounds</option>
+                    </select>
+                  </div>
                   <button class="btn btn-secondary" id="refreshExistingBtn">🔄 Refresh</button>
                 </div>
-              </div>
               
               <div class="table-container">
                 <table class="table">
@@ -251,9 +257,11 @@
               </div>
               
               <div id="noExistingResults" class="hidden" style="text-align: center; padding: 3rem; color: #666;">
-                <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">📊 No results found</p>
-                <p style="font-size: 0.875rem;">Enter results above to see them here.</p>
+                <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">No existing results</p>
+                <p style="font-size: 0.875rem;">Use &quot;Enter New Results&quot; to add results for this tournament.</p>
               </div>
+              </div>
+              <!-- /existingResultsContent -->
             </div>
           </div>
         </div>

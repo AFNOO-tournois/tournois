@@ -601,71 +601,75 @@
   // ============================================
   
   async function loadExistingResults() {
-    const tournament = document.getElementById('resultsTournament').value;
-    
+    const tournamentSelect = document.getElementById('resultsTournament');
+    const tournament = tournamentSelect ? tournamentSelect.value : '';
+    const noTournamentEl = document.getElementById('existingResultsNoTournament');
+    const contentEl = document.getElementById('existingResultsContent');
+    const tournamentNameEl = document.getElementById('existingResultsTournamentName');
+    const noResultsEl = document.getElementById('noExistingResults');
+    const tableBody = document.getElementById('existingResultsBody');
+
     console.log('🔍 Loading existing results for tournament:', tournament);
-    
+
     if (!tournament) {
-      document.getElementById('existingResultsContainer').classList.add('hidden');
       existingResultsMatches = [];
+      if (noTournamentEl) noTournamentEl.classList.remove('hidden');
+      if (contentEl) contentEl.classList.add('hidden');
       return;
     }
-    
+
+    // Show content area and set tournament name (from selected option or admin list)
+    if (noTournamentEl) noTournamentEl.classList.add('hidden');
+    if (contentEl) contentEl.classList.remove('hidden');
+    const tournamentName = tournamentSelect.selectedOptions[0] ? tournamentSelect.selectedOptions[0].textContent : (adminTournaments.find(t => t.id === tournament)?.name_en || tournament);
+    if (tournamentNameEl) tournamentNameEl.textContent = tournamentName;
+
     try {
       if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
-        // Demo mode - hide the section
-        document.getElementById('existingResultsContainer').classList.add('hidden');
-        console.warn('⚠️ Supabase not configured - hiding existing results section');
+        if (noResultsEl) noResultsEl.classList.remove('hidden');
+        if (tableBody) tableBody.innerHTML = '';
         return;
       }
-      
+
       const supabase = window.supabaseConfig.supabase;
       const TABLES = window.supabaseConfig.TABLES;
-      
-      // Fetch all matches for this tournament using tournament_id
+
       const { data: matches, error } = await supabase
         .from(TABLES.MATCHES)
         .select('*')
         .eq('tournament_id', tournament)
         .order('round_number', { ascending: true });
-      
+
       if (error) {
         console.error('❌ Error loading existing results:', error);
         alert('Error loading results: ' + error.message);
         return;
       }
-      
+
       console.log('📊 Found matches:', matches ? matches.length : 0);
-      
-      // Show container
-      document.getElementById('existingResultsContainer').classList.remove('hidden');
-      
+
       if (!matches || matches.length === 0) {
-        console.log('ℹ️ No results found for this tournament');
         existingResultsMatches = [];
-        document.getElementById('noExistingResults').classList.remove('hidden');
-        document.getElementById('existingResultsBody').innerHTML = '';
+        if (noResultsEl) noResultsEl.classList.remove('hidden');
+        if (tableBody) tableBody.innerHTML = '';
+        const filterRound = document.getElementById('filterRound');
+        if (filterRound) filterRound.innerHTML = '<option value="all">All Rounds</option>';
         return;
       }
-      
-      document.getElementById('noExistingResults').classList.add('hidden');
-      
-      // Store so round filter change can re-render without reloading (keeps filter selection)
+
+      if (noResultsEl) noResultsEl.classList.add('hidden');
       existingResultsMatches = matches;
-      
-      // Populate round filter dropdown
+
       const rounds = [...new Set(matches.map(m => m.round_number))].sort((a, b) => a - b);
       const filterRound = document.getElementById('filterRound');
-      const currentFilter = filterRound.value; // preserve selection when refreshing
-      filterRound.innerHTML = '<option value="all">All Rounds</option>' + 
+      const currentFilter = filterRound.value;
+      filterRound.innerHTML = '<option value="all">All Rounds</option>' +
         rounds.map(r => `<option value="${r}">Round ${r}</option>`).join('');
       if (rounds.includes(Number(currentFilter))) {
         filterRound.value = currentFilter;
       }
-      
-      // Display results
+
       displayExistingResults(matches);
-      
     } catch (error) {
       console.error('Error loading existing results:', error);
     }
