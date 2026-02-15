@@ -313,8 +313,11 @@
       throw new Error('Registration error: ' + error.message);
     }
 
-    // Roblox display name + avatar are filled by Database Webhook (participants INSERT)
-    // calling fetch-roblox-profile server-side — no browser call, so no CORS.
+    if (formData.gamePlatform === 'roblox') {
+      supabase.functions.invoke('fetch-roblox-profile', {
+        body: { username: formData.robloxUsername, participant_id: data.id }
+      }).catch(() => {});
+    }
 
     return {
       id: data.id.substring(0, 8).toUpperCase(),
