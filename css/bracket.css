@@ -294,34 +294,28 @@
   position: relative;
 }
 
-/* Responsive design: stack rounds vertically on mobile so nothing overlaps */
+/* Responsive: keep bracket horizontal, scroll left/right on small screens */
 @media (max-width: 768px) {
   .bracket-container {
     padding: 1rem;
     justify-content: flex-start;
-    overflow-x: visible;
-    overflow-y: visible;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .bracket {
-    flex-direction: column;
-    align-items: center;
     gap: 2rem;
-    width: 100%;
-    min-width: 0;
   }
   
   .bracket-round {
-    min-width: 0;
-    width: 100%;
-    max-width: 360px;
+    min-width: 180px;
   }
   
   .bracket-round-third,
   .bracket-round-final {
-    width: 100%;
-    min-width: 0;
-    max-width: 360px;
+    min-width: 180px;
+    width: 180px;
+    max-width: 180px;
   }
   
   .bracket-round-title {
@@ -331,10 +325,6 @@
   .bracket-player {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
-  }
-  
-  .bracket-match {
-    min-width: 0;
   }
 }
 
