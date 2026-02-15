@@ -60,7 +60,7 @@
       const { data, error} = await supabase
         .from('tournaments')
         .select('*')
-        .in('status', ['published', 'in-progress'])  // Don't show completed tournaments in bracket view
+        .in('status', ['published', 'at_capacity', 'in-progress'])  // Don't show completed tournaments in bracket view
         .order('display_order', { ascending: true });
       
       if (error) {
@@ -788,6 +788,7 @@
       const status = tournament.status || 'published';
       const key = status === 'completed' ? 'bracket.statusCompleted'
         : status === 'in-progress' ? 'bracket.statusInProgress'
+        : status === 'at_capacity' ? 'bracket.statusAtCapacity'
         : 'bracket.statusRegistration';
       statusBadgeEl.textContent = window.i18n.t(key);
     }

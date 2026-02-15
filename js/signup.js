@@ -300,23 +300,33 @@
   async function runAutoSplitForTournament(tournamentId) {
     const supabase = window.supabaseConfig.supabase;
     const TABLES = window.supabaseConfig.TABLES;
-    const { data: tournament, error: tErr } = await supabase.from('tournaments').select('max_participants_per_group').eq('id', tournamentId).single();
-    if (tErr || !tournament || tournament.max_participants_per_group == null) return;
-    const maxPerGroup = parseInt(tournament.max_participants_per_group, 10);
-    if (!maxPerGroup || maxPerGroup < 1) return;
-    const { data: participants, error: pErr } = await supabase
-      .from(TABLES.PARTICIPANTS)
-      .select('id, signup_timestamp')
-      .eq('tournament_id', tournamentId)
-      .order('signup_timestamp', { ascending: true });
-    if (pErr || !participants || participants.length === 0) return;
-    const assignments = computeGroupAssignments(participants, maxPerGroup);
-    if (!assignments || assignments.length === 0) return;
-    const numGroups = Math.max(...assignments.map(a => a.group_number));
-    for (const { id, group_number } of assignments) {
-      await supabase.from(TABLES.PARTICIPANTS).update({ group_number }).eq('id', id);
+    const { data: tournament, error: tErr } = await supabase.from('tournaments').select('max_participants_per_group, max_participants').eq('id', tournamentId).single();
+    if (tErr || !tournament) return;
+    const maxPerGroup = tournament.max_participants_per_group != null ? parseInt(tournament.max_participants_per_group, 10) : null;
+    if (maxPerGroup && maxPerGroup >= 1) {
+      const { data: participants, error: pErr } = await supabase
+        .from(TABLES.PARTICIPANTS)
+        .select('id, signup_timestamp')
+        .eq('tournament_id', tournamentId)
+        .order('signup_timestamp', { ascending: true });
+      if (pErr || !participants || participants.length === 0) return;
+      const assignments = computeGroupAssignments(participants, maxPerGroup);
+      if (assignments && assignments.length > 0) {
+        const numGroups = Math.max(...assignments.map(a => a.group_number));
+        for (const { id, group_number } of assignments) {
+          await supabase.from(TABLES.PARTICIPANTS).update({ group_number }).eq('id', id);
+        }
+        await supabase.from('tournaments').update({ number_of_groups: numGroups }).eq('id', tournamentId);
+      }
     }
-    await supabase.from('tournaments').update({ number_of_groups: numGroups }).eq('id', tournamentId);
+    // Auto-close registration when participant count reaches max_participants
+    const maxParticipants = tournament.max_participants != null ? parseInt(tournament.max_participants, 10) : null;
+    if (maxParticipants != null) {
+      const { count, error: countErr } = await supabase.from(TABLES.PARTICIPANTS).select('*', { count: 'exact', head: true }).eq('tournament_id', tournamentId);
+      if (!countErr && count != null && count >= maxParticipants) {
+        await supabase.from('tournaments').update({ status: 'at_capacity' }).eq('id', tournamentId);
+      }
+    }
   }
 
   async function saveToDatabase(formData) {

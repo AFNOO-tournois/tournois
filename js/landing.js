@@ -33,7 +33,7 @@
       const { data, error } = await supabase
         .from('tournaments')
         .select('*')
-        .in('status', ['published', 'in-progress', 'completed'])
+        .in('status', ['published', 'at_capacity', 'in-progress', 'completed'])
         .order('display_order', { ascending: true });
       
       if (error) {
@@ -158,6 +158,15 @@
           <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #40916c 0%, #2d6a4f 100%); border-radius: 8px; text-align: center;">
             <p style="color: white; font-weight: 700; font-size: 1.125rem; margin: 0;">
               🏆 <span data-i18n="landing.tournamentInProgress">Tournoi en cours</span>
+            </p>
+            <p style="color: rgba(255,255,255,0.9); font-size: 0.875rem; margin: 0.5rem 0 0 0;">
+              <span data-i18n="landing.signupClosed">Inscriptions fermées</span>
+            </p>
+          </div>
+        ` : tournament.status === 'at_capacity' ? `
+          <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #e07c24 0%, #c2610a 100%); border-radius: 8px; text-align: center;">
+            <p style="color: white; font-weight: 700; font-size: 1.125rem; margin: 0;">
+              📋 <span data-i18n="bracket.statusAtCapacity">Tournament at capacity</span>
             </p>
             <p style="color: rgba(255,255,255,0.9); font-size: 0.875rem; margin: 0.5rem 0 0 0;">
               <span data-i18n="landing.signupClosed">Inscriptions fermées</span>

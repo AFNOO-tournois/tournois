@@ -180,10 +180,10 @@ const translations = {
       
       // Statuses
       statusRegistration: "Inscription ouverte",
+      statusAtCapacity: "Inscription complète",
       statusUpcoming: "À venir",
       statusInProgress: "En cours",
       statusCompleted: "Terminé",
-      statusUpcoming: "À venir",
       statusLive: "En direct",
       
       // Table Headers
@@ -484,10 +484,10 @@ const translations = {
       
       // Statuses
       statusRegistration: "Registration Open",
+      statusAtCapacity: "Tournament at capacity",
       statusUpcoming: "Upcoming",
       statusInProgress: "In Progress",
       statusCompleted: "Completed",
-      statusUpcoming: "Upcoming",
       statusLive: "Live",
       
       // Table Headers

@@ -300,6 +300,15 @@
             });
           }
         }
+        // Auto-close registration when participant count reaches max_participants
+        const maxParticipants = tournament && tournament.max_participants != null ? parseInt(tournament.max_participants, 10) : null;
+        if (maxParticipants != null && list.length >= maxParticipants && tournament.status !== 'at_capacity') {
+          const { error: statusErr } = await supabase.from('tournaments').update({ status: 'at_capacity' }).eq('id', filterTournament);
+          if (!statusErr) {
+            const tIdx = adminTournaments.findIndex(t => t.id === filterTournament);
+            if (tIdx >= 0) adminTournaments[tIdx] = { ...adminTournaments[tIdx], status: 'at_capacity' };
+          }
+        }
       }
       currentParticipants = list;
       displayParticipantsTable(currentParticipants);
