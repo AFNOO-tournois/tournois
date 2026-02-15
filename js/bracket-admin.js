@@ -819,6 +819,7 @@
     const p1 = getParticipantDisplay(match.player1);
     const p2 = getParticipantDisplay(match.player2);
     const winner = getParticipantDisplay(match.winner);
+    const winnerName = winner.name;
     const player1Name = p1.name || (match.player1_id ? 'TBD' : byeLabel);
     const player2Name = p2.name || (match.player2_id ? 'TBD' : byeLabel);
 
