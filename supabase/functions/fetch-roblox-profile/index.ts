@@ -1,11 +1,17 @@
-// Fetch Roblox profile and update participant. Deploy with: supabase functions deploy fetch-roblox-profile --no-verify-jwt
+// Supabase Edge Function: fetch Roblox profile (display name + avatar) and optionally update participant row.
+// Deploy (required so OPTIONS preflight reaches this code): supabase functions deploy fetch-roblox-profile --no-verify-jwt
+// Set secret for DB updates: supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+// If you get CORS "does not have HTTP ok status", the gateway is rejecting OPTIONS (401). Redeploy with --no-verify-jwt
+// and ensure config.toml has [functions.fetch-roblox-profile] verify_jwt = false.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Explicit CORS so preflight from https://afnoo-tournois.github.io (and any origin) succeeds
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
 };
 
 const ROBLOX_USERS_URL = 'https://users.roblox.com/v1/usernames/users';
@@ -24,6 +30,7 @@ interface RequestBody {
 }
 
 Deno.serve(async (req) => {
+  // CORS preflight: must return 200 OK so browser allows POST from https://afnoo-tournois.github.io
   if (req.method === 'OPTIONS') {
     return new Response('ok', { status: 200, headers: corsHeaders });
   }
