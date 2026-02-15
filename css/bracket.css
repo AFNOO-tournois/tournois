@@ -108,80 +108,58 @@
   margin-right: 0.5rem;
 }
 
-/* Participant avatar (Roblox headshot or placeholder) - used in bracket, leaderboard, admin */
+/* ONE set of rules: avatar + name cell everywhere (bracket, leaderboard, admin, results) */
 .participant-avatar {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  min-height: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  vertical-align: middle;
-  margin-right: 0.5rem;
   flex-shrink: 0;
+  border: 2px solid rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  vertical-align: middle;
 }
-
 .participant-avatar-img.participant-avatar {
   display: inline-block;
 }
-
 .participant-avatar-placeholder.participant-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  background: var(--cf-light-gray, #f0f4f2);
+  background: #e8ece9;
   object-fit: unset;
 }
 
-/* Table cell with avatar + name: same single-line layout for all rows */
 .participant-cell {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-height: 44px;
   white-space: nowrap;
 }
 .participant-cell .participant-avatar {
   margin-right: 0;
 }
 .participant-cell .player-name {
+  font-size: 1rem;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
 }
 
-/* Leaderboard: same row style for all, consistent rank column */
-.leaderboard-row-even {
-  background: #fafafa;
-}
-.leaderboard-row-odd {
-  background: #f0f4f2;
-}
 .leaderboard-rank-cell {
   text-align: center;
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #333;
   vertical-align: middle;
-}
-.leaderboard-rank-inner {
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 2px;
+  min-height: 44px;
 }
 .rank-tie-sup {
   font-size: 0.6rem;
   font-weight: 600;
-  color: #666;
   margin-left: 2px;
-}
-
-/* Same frame for all avatars so placeholder and photo look consistent */
-.participant-cell .participant-avatar,
-.participant-avatar {
-  border: 2px solid rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
 }
 
 .bracket-player-inner {

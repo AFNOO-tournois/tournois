@@ -674,36 +674,7 @@
       margin: 0;
     }
     
-    /* Edit Existing Results: same avatar/participant look and consistent Actions column */
-    #existingResultsBody .participant-cell {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-    }
-    #existingResultsBody .participant-avatar {
-      width: 28px;
-      height: 28px;
-      min-width: 28px;
-      min-height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 2px solid rgba(0, 0, 0, 0.08);
-      box-sizing: border-box;
-    }
-    #existingResultsBody .participant-avatar-placeholder.participant-avatar {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      background: #f0f4f2;
-    }
-    #existingResultsBody .player-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-    }
+    /* Edit Existing Results: Actions column only (avatar/name use bracket.css) */
     #existingResultsBody .existing-results-actions-cell {
       display: flex;
       align-items: center;

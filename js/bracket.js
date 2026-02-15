@@ -566,13 +566,14 @@
               const rankNum = player.rank;
               const rankLabel = player.isTied ? `T${rankNum}` : String(rankNum);
               const tieSup = player.isTied ? '<sup class="rank-tie-sup" data-i18n="bracket.tie">TIE</sup>' : '';
-              const rowClass = index % 2 === 0 ? 'leaderboard-row-even' : 'leaderboard-row-odd';
+              const rowBg = player.rank === 1 ? 'background: linear-gradient(to right, #FFD70022, transparent);' : player.rank === 2 ? 'background: linear-gradient(to right, #C0C0C022, transparent);' : player.rank === 3 ? 'background: linear-gradient(to right, #CD7F3222, transparent);' : (index % 2 === 0 ? 'background: #fafafa;' : 'background: #f0f4f2;');
+              const rankColor = player.rank === 1 ? '#b8860b' : player.rank === 2 ? '#6c757d' : player.rank === 3 ? '#cd7f32' : '#333';
               return `
-                <tr class="${rowClass}">
-                  <td class="leaderboard-rank-cell">
-                    <span class="leaderboard-rank-inner">${medalEmoji} ${rankLabel}${tieSup}</span>
+                <tr style="${rowBg}">
+                  <td class="leaderboard-rank-cell" style="color: ${rankColor}; font-weight: 700; font-size: 1.125rem;">
+                    ${medalEmoji} ${rankLabel}${tieSup}
                   </td>
-                  <td class="participant-cell" style="font-weight: 600; font-size: 1.125rem;">
+                  <td class="participant-cell">
                     ${player.avatarUrl ? `<img src="${escapeHtml(player.avatarUrl)}" alt="" class="participant-avatar" loading="lazy" />` : AVATAR_PLACEHOLDER}
                     <span class="player-name">${escapeHtml(player.username)}</span>
                   </td>
