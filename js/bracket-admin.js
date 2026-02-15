@@ -104,13 +104,18 @@
     if (!select) return;
 
     select.innerHTML = '<option value="">-- Select Tournament --</option>';
-    
-    if (tournaments.length === 0) {
-      select.innerHTML += '<option value="" disabled>No tournaments found</option>';
+
+    const bracketTournaments = tournaments.filter(t => {
+      const style = (t.bracket_style || 'scoreboard').toLowerCase();
+      return style === 'head-to-head' || style === 'mixed';
+    });
+
+    if (bracketTournaments.length === 0) {
+      select.innerHTML += '<option value="" disabled>No Mixed/Head-to-Head tournaments</option>';
       return;
     }
-    
-    tournaments.forEach(t => {
+
+    bracketTournaments.forEach(t => {
       const option = document.createElement('option');
       option.value = t.id;
       option.textContent = `${t.name_en} (${t.bracket_style})`;
