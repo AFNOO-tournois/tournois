@@ -8,17 +8,18 @@
   // ⚠️ This is visible in public GitHub - change regularly
   const ADMIN_PASSWORD = 'AFNOO2026!Secure'; // TODO: Change and use proper auth in production
   
-  // Point values for placements (customize as needed)
+  // Top 10 get points 100 down to 10; below top 10 get 0
   const POINT_SCALE = {
-    1: 100,  // 1st place
-    2: 80,   // 2nd place
-    3: 65,   // 3rd place
-    4: 50,   // 4th place
-    5: 40,   // 5th place
-    6: 30,   // 6th place
-    7: 20,   // 7th place
-    8: 10,   // 8th place
-    default: 5  // 9th place and below
+    1: 100,
+    2: 90,
+    3: 80,
+    4: 70,
+    5: 60,
+    6: 50,
+    7: 40,
+    8: 30,
+    9: 20,
+    10: 10
   };
 
   let isAuthenticated = false;
@@ -462,7 +463,8 @@
   }
   
   function calculatePoints(placement) {
-    return POINT_SCALE[placement] || POINT_SCALE.default;
+    if (!placement || placement < 1) return 0;
+    return POINT_SCALE[placement] ?? 0; // top 10 only; 11th and below = 0
   }
   
   async function saveResults() {
