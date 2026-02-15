@@ -856,15 +856,19 @@
         await advanceWinner(updatedMatch.next_match_id, winnerId);
       }
 
-      // If this was a semifinal (next match is final), send loser to 3rd place match
+      // Only if this was a semifinal (next match is the final), send loser to 3rd place match
       const loserId = updatedMatch.player1_id === winnerId ? updatedMatch.player2_id : updatedMatch.player1_id;
       if (loserId && updatedMatch.next_match_id) {
         const { data: nextMatch } = await supabase.from('bracket_matches').select('round_number').eq('id', updatedMatch.next_match_id).single();
         if (nextMatch) {
-          const { data: thirdPlaceRows } = await supabase.from('bracket_matches').select('id').eq('tournament_id', currentTournament.id).eq('round_number', nextMatch.round_number).eq('match_number', 2);
-          if (thirdPlaceRows && thirdPlaceRows.length > 0) {
-            const slot = updatedMatch.match_number === 1 ? 'player1_id' : 'player2_id';
-            await supabase.from('bracket_matches').update({ [slot]: loserId }).eq('id', thirdPlaceRows[0].id);
+          const { data: maxRoundRow } = await supabase.from('bracket_matches').select('round_number').eq('tournament_id', currentTournament.id).order('round_number', { ascending: false }).limit(1).maybeSingle();
+          const isNextMatchFinal = maxRoundRow && nextMatch.round_number === maxRoundRow.round_number;
+          if (isNextMatchFinal) {
+            const { data: thirdPlaceRows } = await supabase.from('bracket_matches').select('id').eq('tournament_id', currentTournament.id).eq('round_number', nextMatch.round_number).eq('match_number', 2);
+            if (thirdPlaceRows && thirdPlaceRows.length > 0) {
+              const slot = updatedMatch.match_number === 1 ? 'player1_id' : 'player2_id';
+              await supabase.from('bracket_matches').update({ [slot]: loserId }).eq('id', thirdPlaceRows[0].id);
+            }
           }
         }
       }
