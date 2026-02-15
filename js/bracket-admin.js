@@ -868,10 +868,6 @@
 
     if (!matchId || !winnerId) return;
 
-    if (!confirm('Confirm winner selection?')) {
-      return;
-    }
-
     await updateMatchWinner(matchId, winnerId);
   }
 
@@ -908,8 +904,6 @@
 
       // Reload bracket
       await loadAndDisplayBracket();
-      
-      alert('✓ Winner recorded successfully!');
     } catch (error) {
       console.error('Error:', error);
       alert('Error updating match');
