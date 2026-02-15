@@ -150,6 +150,15 @@
           </div>
         </div>
 
+        <!-- Participants only (for no-bracket style) -->
+        <div id="resultsParticipantsSection" class="hidden" style="margin-bottom: 3rem;">
+          <h2 style="margin-bottom: 1.5rem; text-align: center;" data-i18n="bracket.participants">Participants</h2>
+          <p style="text-align: center; color: #666; margin-bottom: 1.5rem;"><span id="resultsParticipantCount">0</span> <span data-i18n="bracket.participants">participants</span></p>
+          <div id="resultsParticipantsList" class="tournament-grid">
+            <!-- Participant cards inserted by JS -->
+          </div>
+        </div>
+
         <!-- Thank You Section -->
         <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #28724f 0%, #1b4d3a 100%); border-radius: 12px; color: white;">
           <h2 style="color: white; margin-bottom: 1rem;" data-i18n="results.thankYou">Merci d'avoir participé!</h2>
@@ -334,6 +343,41 @@
         const bracketStyle = (tournamentObj.bracket_style || 'scoreboard').toLowerCase();
         const bracketSectionEl = document.getElementById('bracketTreeSection');
         if (bracketSectionEl) bracketSectionEl.innerHTML = '';
+
+        // No-bracket: show only participants (same as bracket page before points)
+        if (bracketStyle === 'no-bracket') {
+          const { data: participants } = await supabase
+            .from('participants')
+            .select('*')
+            .eq('tournament_id', tournamentObj.id)
+            .order('signup_timestamp', { ascending: true });
+          document.getElementById('loadingState').classList.add('hidden');
+          document.getElementById('resultsContent').classList.remove('hidden');
+          document.getElementById('podiumSection').classList.add('hidden');
+          document.getElementById('fullStandingsSection').classList.add('hidden');
+          document.getElementById('resultsParticipantsSection').classList.remove('hidden');
+          const listEl = document.getElementById('resultsParticipantsList');
+          const countEl = document.getElementById('resultsParticipantCount');
+          if (countEl) countEl.textContent = participants ? participants.length : 0;
+          if (listEl) {
+            listEl.innerHTML = '';
+            (participants || []).forEach(function(p, i) {
+              const displayName = (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username || '—';
+              const avatarHtml = p.roblox_avatar_url
+                ? '<img width="80" height="80" src="' + escapeHtml(p.roblox_avatar_url) + '" alt="" class="participant-avatar participant-avatar-img" loading="lazy" style="border-radius:50%;object-fit:cover;display:block;" />'
+                : '<div class="participant-avatar participant-avatar-placeholder">🎮</div>';
+              const card = document.createElement('div');
+              card.className = 'participant-card';
+              card.innerHTML = avatarHtml + '<div class="participant-name">' + escapeHtml(displayName) + '</div><div class="participant-status">#' + (i + 1) + '</div>';
+              listEl.appendChild(card);
+            });
+          }
+          if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
+          return;
+        }
+
+        document.getElementById('resultsParticipantsSection').classList.add('hidden');
+        document.getElementById('podiumSection').classList.remove('hidden');
 
         // Head-to-head or mixed: podium from bracket
         if (bracketStyle === 'head-to-head' || bracketStyle === 'mixed') {

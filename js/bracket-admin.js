@@ -144,7 +144,7 @@
 
     // Check if tournament supports brackets
     const bracketStyle = currentTournament.bracket_style || 'scoreboard';
-    if (bracketStyle === 'scoreboard') {
+    if (bracketStyle === 'scoreboard' || bracketStyle === 'no-bracket') {
       document.getElementById('bracketStatus').classList.add('hidden');
       document.getElementById('bracketScoreboardWarning').classList.remove('hidden');
       document.getElementById('bracketActions').classList.add('hidden');

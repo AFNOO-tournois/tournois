@@ -250,6 +250,16 @@
       // Store matches globally
       currentMatches = matches || [];
 
+      const bracketStyle = (tournamentObj.bracket_style || 'scoreboard').toLowerCase();
+
+      // No-bracket: always show only participants list (no leaderboard, no bracket tree)
+      if (bracketStyle === 'no-bracket') {
+        hideRoundFilter();
+        displayParticipants(participants);
+        clearBracketSection();
+        return;
+      }
+
       // Calculate leaderboard if we have results (round dropdown is per-tournament)
       if (matches && matches.length > 0) {
         console.log('✅ Displaying leaderboard with', matches.length, 'matches');
@@ -262,9 +272,8 @@
         hideRoundFilter();
         displayParticipants(participants);
       }
-      
-      // Load bracket only if this tournament uses head-to-head or mixed (not scoreboard)
-      const bracketStyle = (tournamentObj.bracket_style || 'scoreboard').toLowerCase();
+
+      // Load bracket only if this tournament uses head-to-head or mixed (not scoreboard / no-bracket)
       if (bracketStyle === 'head-to-head' || bracketStyle === 'mixed') {
         await loadAndDisplayBracketTree(tournamentObj);
       } else {
