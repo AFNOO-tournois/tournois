@@ -648,7 +648,8 @@
         username: (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username,
         avatarUrl: p.roblox_avatar_url || null,
         totalPoints: 0,
-        roundsPlayed: 0
+        roundsPlayed: 0,
+        groupNumber: p.group_number != null ? p.group_number : 1
       };
     });
 
@@ -702,6 +703,9 @@
     const isGroupView = currentGroupFilter !== 'all';
     const rankHeaderText = (window.i18n && window.i18n.t) ? (isGroupView ? window.i18n.t('bracket.rankInGroup') : window.i18n.t('bracket.rank')) : (isGroupView ? 'Rank in group' : 'Rank');
     const rankNoteText = isGroupView && (window.i18n && window.i18n.t) ? window.i18n.t('bracket.ranksInGroupNote') : '';
+    const maxGroup = participants.length ? Math.max(...participants.map(p => p.group_number != null ? p.group_number : 1)) : 1;
+    const showGroupColumn = maxGroup > 1;
+    const groupHeaderText = (window.i18n && window.i18n.t) ? window.i18n.t('bracket.group') : 'Group';
     // Generate leaderboard table
     const participantsList = document.getElementById('participantsList');
     participantsList.innerHTML = `
@@ -712,6 +716,7 @@
             <tr>
               <th style="width: 100px; min-width: 100px; text-align: center;">${escapeHtml(rankHeaderText)}</th>
               <th><span data-i18n="bracket.participant">Participant</span></th>
+              ${showGroupColumn ? `<th style="width: 90px; min-width: 90px; text-align: center;">${escapeHtml(groupHeaderText)}</th>` : ''}
               <th style="width: 120px; text-align: center;"><span data-i18n="bracket.rounds">Rondes</span></th>
               <th style="width: 120px; text-align: center;"><span data-i18n="bracket.points">Points</span></th>
             </tr>
@@ -724,6 +729,7 @@
               const tieSup = player.isTied ? '<sup class="rank-tie-sup" data-i18n="bracket.tie">TIE</sup>' : '';
               const rowBg = player.rank === 1 ? 'background: linear-gradient(to right, #FFD70022, transparent);' : player.rank === 2 ? 'background: linear-gradient(to right, #C0C0C022, transparent);' : player.rank === 3 ? 'background: linear-gradient(to right, #CD7F3222, transparent);' : 'background: #fafafa;';
               const rankColor = player.rank === 1 ? '#b8860b' : player.rank === 2 ? '#6c757d' : player.rank === 3 ? '#cd7f32' : '#333';
+              const groupCell = showGroupColumn ? `<td style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; color: #555; font-weight: 600; box-sizing: border-box;">${escapeHtml(groupHeaderText)} ${player.groupNumber}</td>` : '';
               return `
                 <tr style="${rowBg} height: 48px;">
                   <td class="leaderboard-rank-td" style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; color: ${rankColor}; font-weight: 700; font-size: 1.125rem; box-sizing: border-box;">
@@ -733,6 +739,7 @@
                     ${player.avatarUrl ? `<img width="32" height="32" src="${escapeHtml(player.avatarUrl)}" alt="" loading="lazy" style="${ROW_AVATAR_STYLE}" />` : AVATAR_PLACEHOLDER}
                     <span style="${ROW_NAME_STYLE}">${escapeHtml(player.username)}</span>
                   </div></td>
+                  ${groupCell}
                   <td style="text-align: center; vertical-align: middle; padding: 12px 16px; height: 48px; max-height: 48px; color: #666; box-sizing: border-box;">
                     ${player.roundsPlayed}
                   </td>
