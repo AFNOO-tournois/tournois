@@ -318,6 +318,28 @@
   // ============================================
   
   function setupResultsEntry() {
+    const newPanel = document.getElementById('resultsNewPanel');
+    const existingPanel = document.getElementById('existingResultsContainer');
+    const btnNew = document.getElementById('btnEnterNewResults');
+    const btnExisting = document.getElementById('btnEditExistingResults');
+
+    btnNew.addEventListener('click', () => {
+      if (newPanel) newPanel.classList.remove('hidden');
+      if (existingPanel) existingPanel.classList.add('hidden');
+      btnNew.classList.add('active');
+      if (btnExisting) btnExisting.classList.remove('active');
+    });
+    btnExisting.addEventListener('click', () => {
+      if (newPanel) newPanel.classList.add('hidden');
+      if (existingPanel) existingPanel.classList.remove('hidden');
+      if (btnNew) btnNew.classList.remove('active');
+      if (btnExisting) btnExisting.classList.add('active');
+      loadExistingResults(); // load so they see existing results (uses selected tournament)
+    });
+    // Default: show Enter New Results
+    if (existingPanel) existingPanel.classList.add('hidden');
+    if (btnNew) btnNew.classList.add('active');
+
     document.getElementById('loadResultsBtn').addEventListener('click', async () => {
       await loadResultsForm();
       await loadExistingResults();
@@ -396,11 +418,15 @@
     document.getElementById('resultsEntryContainer').classList.remove('hidden');
     document.getElementById('displayRound').textContent = round;
     document.getElementById('resultsSaved').classList.add('hidden');
-    
+    const searchInput = document.getElementById('resultsSearch');
+    if (searchInput) searchInput.value = '';
+
     const tbody = document.getElementById('resultsTableBody');
     const displayName = (p) => (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username;
-    tbody.innerHTML = participants.map((p, index) => `
-      <tr>
+    tbody.innerHTML = participants.map((p, index) => {
+      const searchable = ((displayName(p) + ' ' + (p.roblox_username || '')).trim()).toLowerCase();
+      return `
+      <tr data-search="${escapeHtml(searchable)}">
         <td>${index + 1}</td>
         <td style="font-weight: 600;">${p.roblox_avatar_url ? `<img src="${escapeHtml(p.roblox_avatar_url)}" alt="" class="participant-avatar" loading="lazy" />` : '<div class="participant-avatar participant-avatar-placeholder">🎮</div>'}<span class="player-name">${escapeHtml(displayName(p))}</span></td>
         <td>
@@ -418,8 +444,21 @@
           <span class="points-display" data-points-for="${p.id}">-</span>
         </td>
       </tr>
-    `).join('');
-    
+    `;
+    }).join('');
+
+    // Dynamic search: any space-separated tokens must all appear in the participant name (e.g. "BLA Run 22" matches BlaseRunner22)
+    if (searchInput) {
+      searchInput.oninput = function () {
+        const tokens = searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        tbody.querySelectorAll('tr').forEach(tr => {
+          const text = (tr.dataset.search || '');
+          const show = tokens.length === 0 || tokens.every(t => text.includes(t));
+          tr.style.display = show ? '' : 'none';
+        });
+      };
+    }
+
     // Add event listeners for placement inputs
     document.querySelectorAll('.placement-input').forEach(input => {
       input.addEventListener('input', updatePointsPreview);

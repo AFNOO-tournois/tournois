@@ -146,8 +146,14 @@
 
         <!-- TAB 2: ENTER RESULTS -->
         <div id="tab-results" class="admin-tab-content hidden">
-          <h2 style="margin-bottom: 2rem;">Enter Tournament Results</h2>
-          
+          <h2 style="margin-bottom: 1rem;">Enter Tournament Results</h2>
+          <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <button type="button" class="btn btn-primary" id="btnEnterNewResults">Enter New Results</button>
+            <button type="button" class="btn btn-secondary" id="btnEditExistingResults">Edit Existing Results</button>
+          </div>
+
+          <!-- ENTER NEW RESULTS (tournament + round + load + entry form) -->
+          <div id="resultsNewPanel">
           <!-- Tournament Selection -->
           <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
             <div class="form-group">
@@ -179,6 +185,11 @@
                 1st place = 1, 2nd place = 2, etc. Then click "Save Results".
               </p>
               
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" for="resultsSearch">Search participants</label>
+                <input type="text" id="resultsSearch" class="form-input" placeholder="e.g. BLA Run 22 (matches BlaseRunner22)" style="max-width: 400px;">
+              </div>
+              
               <div class="table-container">
                 <table class="table">
                   <thead>
@@ -205,9 +216,11 @@
               </div>
             </div>
           </div>
+          </div>
+          <!-- /resultsNewPanel -->
 
-          <!-- VIEW/EDIT EXISTING RESULTS -->
-          <div id="existingResultsContainer" class="hidden" style="margin-top: 3rem;">
+          <!-- EDIT EXISTING RESULTS -->
+          <div id="existingResultsContainer" class="hidden" style="margin-top: 0;">
             <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h3>Existing Results</h3>
