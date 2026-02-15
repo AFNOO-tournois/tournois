@@ -593,7 +593,7 @@ a:focus-visible {
   background: var(--cf-blue-primary);
   color: var(--cf-white);
   font-weight: 600;
-  text-align: left;
+  text-align: center;
   padding: var(--spacing-md);
 }
 
