@@ -466,7 +466,27 @@
     // Link matches (next_match_id)
     linkMatches(matches);
 
+    // Advance round 1 bye winners (and any completed winners) into their next-round slots
+    advanceWinnersIntoNextRound(matches);
+
     return matches;
+  }
+
+  /** For each round 1 match that has a winner (e.g. bye), fill the corresponding slot in the round 2 match. */
+  function advanceWinnersIntoNextRound(matches) {
+    const round1Matches = matches.filter(m => m.round_number === 1);
+    round1Matches.forEach(r1Match => {
+      if (!r1Match.winner_id) return;
+      const nextMatchNumber = Math.ceil(r1Match.match_number / 2);
+      const nextMatch = matches.find(m => m.round_number === 2 && m.match_number === nextMatchNumber);
+      if (!nextMatch) return;
+      const isPlayer1Slot = r1Match.match_number % 2 === 1;
+      if (isPlayer1Slot) {
+        nextMatch.player1_id = r1Match.winner_id;
+      } else {
+        nextMatch.player2_id = r1Match.winner_id;
+      }
+    });
   }
 
   function createSeedPairings(bracketSize) {
