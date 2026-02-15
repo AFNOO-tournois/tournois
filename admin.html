@@ -385,6 +385,41 @@
             </div>
           </div>
 
+          <!-- Edit Bracket Match Modal -->
+          <div id="editBracketMatchModal" class="modal hidden">
+            <div class="modal-content" style="max-width: 480px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Edit match</h3>
+                <button type="button" class="btn btn-outline close-edit-match-modal" style="padding: 0.5rem 1rem;">✕</button>
+              </div>
+              <input type="hidden" id="editMatchId" value="">
+              <div class="form-group">
+                <label class="form-label">Player 1</label>
+                <select id="editMatchPlayer1" class="form-select">
+                  <option value="">— No player —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Player 2</label>
+                <select id="editMatchPlayer2" class="form-select">
+                  <option value="">— No player —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Winner</label>
+                <select id="editMatchWinner" class="form-select">
+                  <option value="">— Not decided —</option>
+                  <option value="player1">Player 1 wins</option>
+                  <option value="player2">Player 2 wins</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-outline close-edit-match-modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditMatchBtn">Save</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Empty State -->
           <div id="bracketEmpty" class="hidden" style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 12px;">
             <p style="font-size: 3rem; margin-bottom: 1rem;">🌳</p>

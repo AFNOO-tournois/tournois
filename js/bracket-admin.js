@@ -51,6 +51,23 @@
     if (refreshBtn) {
       refreshBtn.addEventListener('click', loadAndDisplayBracket);
     }
+
+    const bracketContainer = document.getElementById('bracketMatchesContainer');
+    if (bracketContainer) {
+      bracketContainer.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-match-btn');
+        if (editBtn) {
+          e.preventDefault();
+          openEditMatchModal(editBtn.dataset.matchId);
+        }
+      });
+    }
+
+    document.querySelectorAll('.close-edit-match-modal').forEach(btn => {
+      btn.addEventListener('click', () => hideEditMatchModal());
+    });
+    const saveEditMatchBtn = document.getElementById('saveEditMatchBtn');
+    if (saveEditMatchBtn) saveEditMatchBtn.addEventListener('click', saveEditMatch);
   }
 
   // ============================================
@@ -115,6 +132,10 @@
 
     currentTournament = tournaments.find(t => t.id === tournamentId);
     if (!currentTournament) return;
+
+    // Hide any previously viewed bracket so we don't show the wrong tournament's bracket
+    document.getElementById('bracketDisplay').classList.add('hidden');
+    bracketMatches = [];
 
     // Check if tournament supports brackets
     const bracketStyle = currentTournament.bracket_style || 'scoreboard';
@@ -396,21 +417,23 @@
 
   /**
    * Create bracket for N players (no padding to power of 2).
-   * Round 1: 1 vs N, 2 vs N-1, 3 vs N-2, ... (ceil(N/2) matches). If N odd, middle seed gets a bye.
-   * Later rounds: normal tree; if round 1 has odd winners, one gets a bye to the final.
+   * Round 1: 1 vs N, 2 vs N-1, ... If N odd, seed 1 gets a bye (match 1 = 1 vs bye).
+   * When round 1 has odd winners (e.g. 5 → 3 games): round 2 has 2 matches (semifinal + final);
+   * bye winner goes into the final (R2M2), other two winners play the semifinal (R2M1).
    */
   function createBracketStructure(seededParticipants, numPlayers) {
     const matches = [];
     const n = numPlayers;
     const M1 = Math.ceil(n / 2); // round 1 match count
+    const isOdd = n % 2 === 1;
 
-    // Round 1: match i has seed i vs seed n+1-i (1-based). If n odd and i = (n+1)/2, then seed i vs bye.
+    // Round 1: match 1 = 1 vs (bye if odd, else n). Match i>1: seed i vs seed n+2-i (so 2 vs n, 3 vs n-1, ...)
     for (let i = 1; i <= M1; i++) {
       const seed1 = i;
-      const seed2 = n + 1 - i;
-      const isBye = seed1 === seed2; // only when n is odd and i is middle
+      const isBye = isOdd && i === 1; // seed 1 gets bye when n is odd
+      const seed2 = isBye ? null : (i === 1 ? n : n + 2 - i);
       const player1 = seed1 <= n ? seededParticipants[seed1 - 1] : null;
-      const player2 = !isBye && seed2 <= n ? seededParticipants[seed2 - 1] : null;
+      const player2 = !isBye && seed2 && seed2 <= n ? seededParticipants[seed2 - 1] : null;
 
       let matchStatus = 'pending';
       let winnerId = null;
@@ -437,11 +460,11 @@
       });
     }
 
-    // Build subsequent rounds: W winners from previous, floor(W/2) matches, W % 2 byes to next round
+    // Build subsequent rounds. When W1 is odd (e.g. 5 → 3 winners): round 2 has 2 matches only (no round 3).
     let W = M1;
     let round = 2;
     while (W > 1) {
-      const matchesInRound = Math.floor(W / 2);
+      const matchesInRound = W === 3 ? 2 : Math.floor(W / 2); // 3 winners → 2 matches (semifinal + final)
       for (let i = 1; i <= matchesInRound; i++) {
         matches.push({
           round_number: round,
@@ -454,7 +477,8 @@
           match_status: 'pending'
         });
       }
-      W = matchesInRound + (W % 2); // winners from matches + bye(s)
+      if (W === 3) break; // only 2 rounds: bye winner in R2M2, other two in R2M1
+      W = Math.floor(W / 2) + (W % 2);
       round++;
     }
 
@@ -464,53 +488,58 @@
     return matches;
   }
 
-  /** Fill next-round slots for every round 1 match that has a winner (including bye). Handles bye-to-final. */
+  /** Fill next-round slots. When M1 is odd (e.g. 5): R1M1 (bye) → R2M2 player1; R1M2 → R2M1 player1; R1M3 → R2M1 player2. */
   function advanceWinnersIntoNextRound(matches) {
     const round1Matches = matches.filter(m => m.round_number === 1).sort((a, b) => a.match_number - b.match_number);
     const M1 = round1Matches.length;
-    const M2 = Math.floor(M1 / 2); // round 2 match count; first 2*M2 R1 matches feed R2
-    const hasByeToFinal = M1 % 2 === 1;
+    const hasOddR1 = M1 % 2 === 1;
 
     round1Matches.forEach(r1Match => {
       if (!r1Match.winner_id) return;
       const i = r1Match.match_number;
 
-      if (hasByeToFinal && i === M1) {
-        // This winner has a bye to the final (last round)
-        const finalMatch = matches.filter(m => m.round_number === Math.max(...matches.map(x => x.round_number))).find(m => m.match_number === 1);
-        if (finalMatch) finalMatch.player2_id = r1Match.winner_id;
+      if (hasOddR1) {
+        // 3 round-1 matches: bye winner (match 1) → R2 match 2 player1; matches 2 and 3 → R2 match 1
+        if (i === 1) {
+          const r2m2 = matches.find(m => m.round_number === 2 && m.match_number === 2);
+          if (r2m2) r2m2.player1_id = r1Match.winner_id;
+        } else {
+          const r2m1 = matches.find(m => m.round_number === 2 && m.match_number === 1);
+          if (r2m1) {
+            if (i === 2) r2m1.player1_id = r1Match.winner_id;
+            else r2m1.player2_id = r1Match.winner_id;
+          }
+        }
         return;
       }
 
       const nextMatchNumber = Math.ceil(i / 2);
-      const nextRound = 2;
-      const nextMatch = matches.find(m => m.round_number === nextRound && m.match_number === nextMatchNumber);
+      const nextMatch = matches.find(m => m.round_number === 2 && m.match_number === nextMatchNumber);
       if (!nextMatch) return;
-      const isPlayer1Slot = i % 2 === 1;
-      if (isPlayer1Slot) {
-        nextMatch.player1_id = r1Match.winner_id;
-      } else {
-        nextMatch.player2_id = r1Match.winner_id;
-      }
+      if (i % 2 === 1) nextMatch.player1_id = r1Match.winner_id;
+      else nextMatch.player2_id = r1Match.winner_id;
     });
   }
 
   function linkMatches(matches) {
     const round1Matches = matches.filter(m => m.round_number === 1);
     const M1 = round1Matches.length;
-    const M2 = Math.floor(M1 / 2);
-    const hasByeToFinal = M1 % 2 === 1;
-    const maxRound = Math.max(...matches.map(m => m.round_number));
+    const hasOddR1 = M1 % 2 === 1;
 
     matches.forEach((match) => {
       const round = match.round_number;
       const matchNum = match.match_number;
 
-      // Round 1: first 2*M2 matches feed round 2; last match (if bye) feeds final
       if (round === 1) {
-        if (hasByeToFinal && matchNum === M1) {
-          const finalMatch = matches.find(m => m.round_number === maxRound && m.match_number === 1);
-          if (finalMatch) match.next_match_id = finalMatch.id || `temp_${maxRound}_1`;
+        if (hasOddR1) {
+          // Bye winner (match 1) → R2M2; matches 2 and 3 → R2M1
+          if (matchNum === 1) {
+            const r2m2 = matches.find(m => m.round_number === 2 && m.match_number === 2);
+            if (r2m2) match.next_match_id = r2m2.id || 'temp_2_2';
+          } else {
+            const r2m1 = matches.find(m => m.round_number === 2 && m.match_number === 1);
+            if (r2m1) match.next_match_id = r2m1.id || 'temp_2_1';
+          }
         } else {
           const nextMatchNumber = Math.ceil(matchNum / 2);
           const nextMatch = matches.find(m => m.round_number === 2 && m.match_number === nextMatchNumber);
@@ -519,7 +548,7 @@
         return;
       }
 
-      // Other rounds: standard tree
+      // Round 2: if there are 2 matches in round 2 (5-player bracket), R2M1 winner → R2M2
       const nextRoundMatches = matches.filter(m => m.round_number === round + 1);
       if (nextRoundMatches.length > 0) {
         const nextMatchNumber = Math.ceil(matchNum / 2);
@@ -527,6 +556,10 @@
         if (nextMatch) {
           match.next_match_id = nextMatch.id || `temp_${round + 1}_${nextMatchNumber}`;
         }
+      } else if (round === 2 && matchNum === 1) {
+        // Only 2 rounds (e.g. 5 players): R2M1 winner goes to R2M2
+        const r2m2 = matches.find(m => m.round_number === 2 && m.match_number === 2);
+        if (r2m2) match.next_match_id = r2m2.id || 'temp_2_2';
       }
     });
   }
@@ -779,8 +812,9 @@
 
     return `
       <div class="bracket-match ${isCompleted ? 'completed' : ''}" style="background: white; border: 2px solid ${isCompleted ? '#6ab04c' : '#e0e0e0'}; border-radius: 8px; padding: 1rem;">
-        <div style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #666; font-weight: 600;">
-          Match ${match.match_number}
+        <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.875rem; color: #666; font-weight: 600;">Match ${match.match_number}</span>
+          <button type="button" class="btn btn-outline edit-match-btn" data-match-id="${match.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">✏️ Edit</button>
         </div>
         
         <div style="margin-bottom: 0.5rem;">
@@ -915,6 +949,112 @@
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  }
+
+  // ============================================
+  // EDIT BRACKET MATCH (manual edit)
+  // ============================================
+
+  function openEditMatchModal(matchId) {
+    const match = bracketMatches.find(m => m.id === matchId);
+    if (!match) return;
+
+    const modal = document.getElementById('editBracketMatchModal');
+    const idInput = document.getElementById('editMatchId');
+    const p1Select = document.getElementById('editMatchPlayer1');
+    const p2Select = document.getElementById('editMatchPlayer2');
+    const winnerSelect = document.getElementById('editMatchWinner');
+    if (!modal || !idInput || !p1Select || !p2Select || !winnerSelect) return;
+
+    idInput.value = matchId;
+
+    function participantLabel(p) {
+      const name = (p.roblox_display_name || p.roblox_username || '').trim() || p.roblox_username || 'Unknown';
+      return name;
+    }
+
+    const optionsHtml = '<option value="">— No player —</option>' +
+      participants.map(p => `<option value="${p.id}">${escapeHtml(participantLabel(p))}</option>`).join('');
+
+    p1Select.innerHTML = optionsHtml;
+    p2Select.innerHTML = optionsHtml;
+    p1Select.value = match.player1_id || '';
+    p2Select.value = match.player2_id || '';
+
+    winnerSelect.innerHTML =
+      '<option value="">— Not decided —</option>' +
+      '<option value="player1">Player 1 wins</option>' +
+      '<option value="player2">Player 2 wins</option>';
+    if (match.winner_id) {
+      if (match.winner_id === match.player1_id) winnerSelect.value = 'player1';
+      else if (match.winner_id === match.player2_id) winnerSelect.value = 'player2';
+      else winnerSelect.value = '';
+    } else {
+      winnerSelect.value = '';
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  function hideEditMatchModal() {
+    const modal = document.getElementById('editBracketMatchModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  async function saveEditMatch() {
+    const idInput = document.getElementById('editMatchId');
+    const p1Select = document.getElementById('editMatchPlayer1');
+    const p2Select = document.getElementById('editMatchPlayer2');
+    const winnerSelect = document.getElementById('editMatchWinner');
+    if (!idInput || !p1Select || !p2Select || !winnerSelect) return;
+
+    const matchId = idInput.value;
+    const match = bracketMatches.find(m => m.id === matchId);
+    if (!match || !window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) return;
+
+    const player1Id = p1Select.value || null;
+    const player2Id = p2Select.value || null;
+    let winnerId = null;
+    if (winnerSelect.value === 'player1') winnerId = player1Id;
+    else if (winnerSelect.value === 'player2') winnerId = player2Id;
+
+    const supabase = window.supabaseConfig.supabase;
+
+    try {
+      const { data: updatedMatch, error } = await supabase
+        .from('bracket_matches')
+        .update({
+          player1_id: player1Id,
+          player2_id: player2Id,
+          winner_id: winnerId,
+          match_status: winnerId ? 'completed' : 'pending'
+        })
+        .eq('id', matchId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating match:', error);
+        alert('Error updating match');
+        return;
+      }
+
+      // If this match feeds a next match, set that slot to the winner
+      if (winnerId && updatedMatch.next_match_id) {
+        const slot = match.match_number % 2 === 1 ? 'player1_id' : 'player2_id';
+        await supabase
+          .from('bracket_matches')
+          .update({ [slot]: winnerId })
+          .eq('id', updatedMatch.next_match_id);
+      }
+
+      hideEditMatchModal();
+      await loadAndDisplayBracket();
+      alert('✓ Match updated');
+    } catch (err) {
+      console.error('Error saving match:', err);
+      alert('Error updating match');
     }
   }
 
