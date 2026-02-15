@@ -188,6 +188,7 @@
       robloxUsername: document.getElementById('robloxUsername').value.trim(),
       tournament: tournamentRadio?.value,
       tournamentId: tournamentRadio?.dataset.tournamentId, // Get the UUID
+      gamePlatform: (tournamentRadio?.dataset.gamePlatform || '').toLowerCase(), // e.g. "roblox" for Roblox lookup
       ageConfirm: document.getElementById('ageConfirm').checked,
       rulesAccept: document.getElementById('rulesAccept').checked,
       honeypot: honeypot // Include for database-level check too
@@ -315,7 +316,7 @@
     // Fetch Roblox display name + avatar only when this tournament's platform is Roblox
     const isRoblox = formData.gamePlatform === 'roblox';
     if (isRoblox) {
-      supabase.functions.invoke('Robloxuserinfo', {
+      supabase.functions.invoke('fetch-roblox-profile', {
         body: { username: formData.robloxUsername, participant_id: data.id }
       }).then(({ error: fnErr }) => {
         if (fnErr) console.warn('Roblox profile fetch failed (optional):', fnErr);
