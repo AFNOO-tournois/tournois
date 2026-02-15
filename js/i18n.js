@@ -138,7 +138,7 @@ const translations = {
       
       // Privacy Notice
       privacyTitle: "Confidentialité",
-      privacyText: "Nous ne collectons que votre nom d'utilisateur Roblox (information publique). Aucune donnée personnelle n'est requise."
+      privacyText: "Nous ne collectons que votre nom d'utilisateur (information publique). Aucune donnée personnelle n'est requise."
     },
 
     // Bracket/Live View

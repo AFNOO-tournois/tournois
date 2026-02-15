@@ -577,6 +577,7 @@ a:focus-visible {
    ============================================ */
 .table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: var(--spacing-lg) 0;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -613,6 +614,18 @@ a:focus-visible {
   box-sizing: border-box;
   overflow: hidden;
 }
+/* Participant (name) column: keep visible on mobile so names don't collapse under fixed layout */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  min-width: 100px;
+}
+@media (max-width: 768px) {
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    min-width: 120px;
+  }
+}
+
 /* Inner wrapper for participant cells: flex must be on a div inside td, not on td, so row height stays correct */
 .table .participant-cell-inner {
   display: flex;
