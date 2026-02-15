@@ -617,43 +617,48 @@ a:focus-visible {
 /* Participant (name) column: wide enough for full names; scroll to see points if needed */
 .table th:nth-child(2),
 .table td:nth-child(2) {
-  min-width: 180px;
+  min-width: 200px;
   overflow: visible;
 }
 /* Allow participant name to show in full (no ellipsis) */
 .table td:nth-child(2) .participant-cell-inner {
   overflow: visible;
 }
-/* Points and Status columns: prevent overlap on mobile */
+/* Points and Status columns: enough space so they don't overlap */
 .table th:nth-child(3),
 .table td:nth-child(3) {
-  min-width: 80px;
+  min-width: 100px;
 }
 .table th:nth-child(4),
 .table td:nth-child(4) {
-  min-width: 100px;
+  min-width: 120px;
 }
 @media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
   .table th:nth-child(2),
   .table td:nth-child(2) {
-    min-width: 200px;
+    min-width: 220px;
   }
   .table th:nth-child(3),
   .table td:nth-child(3) {
-    min-width: 90px;
+    min-width: 100px;
   }
   .table th:nth-child(4),
   .table td:nth-child(4) {
-    min-width: 110px;
+    min-width: 130px;
   }
   /* Bracket page leaderboard: participant column wide for full names */
   .table.leaderboard-table th:nth-child(2),
   .table.leaderboard-table td:nth-child(2) {
-    min-width: 200px;
+    min-width: 220px;
   }
   /* Results page Full Standings: force horizontal scroll so columns don't overlap */
   .table.standings-table {
-    min-width: 560px;
+    min-width: 640px;
   }
 }
 
