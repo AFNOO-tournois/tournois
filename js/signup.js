@@ -72,7 +72,6 @@
         const subtitle = currentLang === 'fr' ? tournament.subtitle_fr : tournament.subtitle_en;
         const format = currentLang === 'fr' ? tournament.format_fr : tournament.format_en;
         
-        const platform = (tournament.game_platform || '').toString().toLowerCase();
         return `
           <div class="form-radio">
             <input 
@@ -81,7 +80,6 @@
               name="tournament" 
               value="${escapeHtml(tournament.tournament_type)}"
               data-tournament-id="${tournament.id}"
-              data-game-platform="${escapeHtml(platform)}"
               required
             >
             <label for="tournament-${tournament.id}" class="form-radio-label">
@@ -188,7 +186,6 @@
       robloxUsername: document.getElementById('robloxUsername').value.trim(),
       tournament: tournamentRadio?.value,
       tournamentId: tournamentRadio?.dataset.tournamentId, // Get the UUID
-      gamePlatform: (tournamentRadio?.dataset.gamePlatform || '').toLowerCase(), // e.g. "roblox" for Roblox lookup
       ageConfirm: document.getElementById('ageConfirm').checked,
       rulesAccept: document.getElementById('rulesAccept').checked,
       honeypot: honeypot // Include for database-level check too
@@ -313,15 +310,12 @@
       throw new Error('Registration error: ' + error.message);
     }
 
-    // Fetch Roblox display name + avatar only when this tournament's platform is Roblox
-    const isRoblox = formData.gamePlatform === 'roblox';
-    if (isRoblox) {
-      supabase.functions.invoke('fetch-roblox-profile', {
-        body: { username: formData.robloxUsername, participant_id: data.id }
-      }).then(({ error: fnErr }) => {
-        if (fnErr) console.warn('Roblox profile fetch failed (optional):', fnErr);
-      }).catch(() => {});
-    }
+    // Fetch Roblox display name + avatar via Edge Function (updates participant row server-side)
+    supabase.functions.invoke('Robloxuserinfo', {
+      body: { username: formData.robloxUsername, participant_id: data.id }
+    }).then(({ error: fnErr }) => {
+      if (fnErr) console.warn('Roblox profile fetch failed (optional):', fnErr);
+    }).catch(() => {});
 
     return {
       id: data.id.substring(0, 8).toUpperCase(),
