@@ -119,21 +119,13 @@
     // Check if tournament supports brackets
     const bracketStyle = currentTournament.bracket_style || 'scoreboard';
     if (bracketStyle === 'scoreboard') {
-      showBracketStatus();
-      document.getElementById('bracketStatus').innerHTML = `
-        <div style="padding: 1.5rem; background: #FFF3CD; border-radius: 8px; border-left: 4px solid #FFC107;">
-          <h3 style="margin-bottom: 1rem; color: #856404;">⚠️ Scoreboard-Only Tournament</h3>
-          <p style="margin: 0; color: #856404;">
-            This tournament is set to "Scoreboard" mode. To generate elimination brackets, 
-            edit this tournament in the "Manage Tournaments" tab and change the "Bracket Style" 
-            to either "Head-to-Head" or "Mixed".
-          </p>
-        </div>
-      `;
-      document.getElementById('bracketStatus').classList.remove('hidden');
+      document.getElementById('bracketStatus').classList.add('hidden');
+      document.getElementById('bracketScoreboardWarning').classList.remove('hidden');
       document.getElementById('bracketActions').classList.add('hidden');
       return;
     }
+
+    document.getElementById('bracketScoreboardWarning').classList.add('hidden');
 
     await loadTournamentData();
     showBracketStatus();
@@ -230,6 +222,7 @@
 
   function hideAllSections() {
     document.getElementById('bracketStatus').classList.add('hidden');
+    document.getElementById('bracketScoreboardWarning').classList.add('hidden');
     document.getElementById('bracketActions').classList.add('hidden');
     document.getElementById('generateBracketForm').classList.add('hidden');
     document.getElementById('bracketDisplay').classList.add('hidden');
