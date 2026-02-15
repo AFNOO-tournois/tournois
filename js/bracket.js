@@ -353,10 +353,9 @@
       if (isLastRound && (thirdPlaceMatch || finalMatch)) {
         // Last round: 3rd Place column first, then Finals column (clear for announcers/viewers)
         if (thirdPlaceMatch) {
-          const thirdPlaceTitle = (window.i18n && window.i18n.t ? window.i18n.t.bind(window.i18n) : (k) => k)('bracket.thirdPlace') || '3rd Place';
           html += `
         <div class="bracket-round bracket-round-third">
-          <div class="bracket-round-title bracket-round-title-third">${escapeHtml(thirdPlaceTitle)}</div>
+          <div class="bracket-round-title bracket-round-title-third" data-i18n="bracket.thirdPlace">3rd Place</div>
           ${renderBracketMatch(thirdPlaceMatch, true)}
         </div>`;
         }
@@ -454,12 +453,13 @@
   }
 
   function renderBracketMatch(match, isThirdPlace) {
+    const t = window.i18n && window.i18n.t ? window.i18n.t.bind(window.i18n) : (k) => k;
+    const byeLabel = t('bracket.bye') || 'Bye';
     const p1 = getParticipantDisplay(match.player1);
     const p2 = getParticipantDisplay(match.player2);
     const winner = getParticipantDisplay(match.winner);
-    const player1Name = p1.name || 'TBD';
-    const player2Name = p2.name || 'TBD';
-    const winnerName = winner.name;
+    const player1Name = p1.name || (match.player1 ? 'TBD' : byeLabel);
+    const player2Name = p2.name || (match.player2 ? 'TBD' : byeLabel);
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
     const thirdClass = isThirdPlace ? ' bracket-match-third-place' : '';
@@ -470,11 +470,11 @@
         ${thirdBadge}
         <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}">
           ${match.player1_seed ? `<span class="player-seed">${match.player1_seed}</span>` : ''}
-          <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, 'TBD')}</span>
+          <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, match.player1 ? 'TBD' : byeLabel)}</span>
         </div>
         <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}">
           ${match.player2_seed ? `<span class="player-seed">${match.player2_seed}</span>` : ''}
-          <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, 'TBD')}</span>
+          <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, match.player2 ? 'TBD' : byeLabel)}</span>
         </div>
       </div>
     `;

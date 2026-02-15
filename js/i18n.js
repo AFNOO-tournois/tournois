@@ -207,6 +207,7 @@ const translations = {
       matchNumber: "Match",
       winner: "Gagnant",
       vs: "contre",
+      bye: "Exempt",
       
       // Leaderboard
       leaderboardTitle: "Classement",
@@ -506,6 +507,7 @@ const translations = {
       matchNumber: "Match",
       winner: "Winner",
       vs: "vs",
+      bye: "Bye",
       
       // Leaderboard
       leaderboardTitle: "Leaderboard",

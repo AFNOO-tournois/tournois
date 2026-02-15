@@ -814,12 +814,13 @@
   }
 
   function renderMatch(match, maxRoundNum) {
+    const t = window.i18n && window.i18n.t ? window.i18n.t.bind(window.i18n) : (k) => k;
+    const byeLabel = t('bracket.bye') || 'Bye';
     const p1 = getParticipantDisplay(match.player1);
     const p2 = getParticipantDisplay(match.player2);
     const winner = getParticipantDisplay(match.winner);
-    const player1Name = p1.name || 'TBD';
-    const player2Name = p2.name || 'TBD';
-    const winnerName = winner.name;
+    const player1Name = p1.name || (match.player1_id ? 'TBD' : byeLabel);
+    const player2Name = p2.name || (match.player2_id ? 'TBD' : byeLabel);
 
     const isCompleted = match.match_status === 'completed' || match.winner_id;
     const canSelect = match.player1_id && match.player2_id && !isCompleted;
@@ -837,7 +838,7 @@
         <div style="margin-bottom: 0.5rem;">
           <div class="bracket-player ${winnerName === player1Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player1Name ? 'background: #6ab04c20;' : ''}">
             ${match.player1_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player1_seed}</span>` : ''}
-            <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, 'TBD')}</span>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p1, match.player1_id ? 'TBD' : byeLabel)}</span>
             ${winnerName === player1Name ? ' ✓' : ''}
           </div>
         </div>
@@ -847,7 +848,7 @@
         <div style="margin-bottom: 0.5rem;">
           <div class="bracket-player ${winnerName === player2Name ? 'winner' : winnerName ? 'loser' : ''}" style="padding: 0.5rem; border-radius: 4px; ${winnerName === player2Name ? 'background: #6ab04c20;' : ''}">
             ${match.player2_seed ? `<span style="background: #28724f; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;">${match.player2_seed}</span>` : ''}
-            <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, 'TBD')}</span>
+            <span class="bracket-player-inner">${renderParticipantWithAvatar(p2, match.player2_id ? 'TBD' : byeLabel)}</span>
             ${winnerName === player2Name ? ' ✓' : ''}
           </div>
         </div>
