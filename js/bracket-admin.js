@@ -688,8 +688,48 @@
 
     let html = '';
 
+    const maxRoundNum = Math.max(...Object.keys(rounds).map(Number));
+
     Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).forEach(roundNum => {
       const matches = rounds[roundNum];
+      const isLastRound = parseInt(roundNum) === maxRoundNum;
+      const thirdPlaceMatch = isLastRound ? matches.find(m => m.match_number === 2) : null;
+      const finalMatch = isLastRound ? matches.find(m => m.match_number === 1) : null;
+
+      if (isLastRound && (thirdPlaceMatch || finalMatch)) {
+        // Last round: show 3rd Place first, then Finals (for announcer order)
+        if (thirdPlaceMatch) {
+          html += `
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #28724f; margin-bottom: 1rem;">3rd Place</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+          `;
+          html += renderMatch(thirdPlaceMatch, maxRoundNum);
+          html += `
+              </div>
+            </div>
+          `;
+        }
+        if (finalMatch) {
+          const roundKey = getRoundNameKey(parseInt(roundNum), Object.keys(rounds).length);
+          const roundName = getRoundName(parseInt(roundNum), Object.keys(rounds).length);
+          const roundTitleHtml = roundKey === 'bracket.round'
+            ? roundName
+            : `<span data-i18n="${roundKey}">${roundName}</span>`;
+          html += `
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #28724f; margin-bottom: 1rem;">${roundTitleHtml}</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+          `;
+          html += renderMatch(finalMatch, maxRoundNum);
+          html += `
+              </div>
+            </div>
+          `;
+        }
+        return;
+      }
+
       const roundKey = getRoundNameKey(parseInt(roundNum), Object.keys(rounds).length);
       const roundName = getRoundName(parseInt(roundNum), Object.keys(rounds).length);
       const roundTitleHtml = roundKey === 'bracket.round'
@@ -702,7 +742,6 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
       `;
 
-      const maxRoundNum = Math.max(...Object.keys(rounds).map(Number));
       matches.forEach(match => {
         html += renderMatch(match, maxRoundNum);
       });

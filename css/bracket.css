@@ -53,6 +53,43 @@
   border-color: #6ab04c;
 }
 
+/* 3rd Place column and match – clearly distinct from Finals */
+.bracket-round-third .bracket-round-title-third {
+  color: #b8860b;
+  border-bottom-color: #daa520;
+}
+
+.bracket-match-third-place {
+  border-color: #b8860b;
+  position: relative;
+}
+
+.bracket-match-third-place.completed {
+  border-color: #cd7f32;
+}
+
+.bracket-match-badge {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px 4px 0 0;
+}
+
+.bracket-match-badge-third {
+  background: linear-gradient(to bottom, #daa520, #b8860b);
+  color: #fff;
+}
+
+/* Finals column – emphasize as the main event */
+.bracket-round-final .bracket-round-title-final {
+  color: #1a5f3a;
+  border-bottom-width: 4px;
+  border-bottom-color: #6ab04c;
+}
+
 .bracket-player {
   padding: 0.75rem 1rem;
   display: flex;
