@@ -55,7 +55,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = (await req.json()) as RequestBody;
+    let body: RequestBody;
+    try {
+      const raw = await req.json();
+      body = raw as RequestBody;
+    } catch (_) {
+      return json({ error: 'Invalid JSON body' }, 400);
+    }
     const tournamentId = body?.tournament_id;
     if (!tournamentId || typeof tournamentId !== 'string') {
       return json({ error: 'tournament_id required' }, 400);
@@ -65,7 +71,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     if (!serviceRole || !supabaseUrl) {
       console.error('Missing SUPABASE_SERVICE_ROLE_KEY or SUPABASE_URL');
-      return json({ error: 'Server not configured' }, 500);
+      return json({ error: 'Server not configured. Set SUPABASE_SERVICE_ROLE_KEY in Supabase Dashboard → Project Settings → Edge Functions → Secrets.', ok: false }, 500);
     }
 
     const supabase = createClient(supabaseUrl, serviceRole);
@@ -76,7 +82,11 @@ Deno.serve(async (req) => {
       .eq('id', tournamentId)
       .single();
 
-    if (tErr || !tournament) {
+    if (tErr) {
+      console.error('Tournament fetch error:', tErr);
+      return json({ error: 'Tournament fetch failed', detail: tErr.message, ok: false }, 500);
+    }
+    if (!tournament) {
       return json({ error: 'Tournament not found', ok: false }, 404);
     }
 
@@ -109,7 +119,7 @@ Deno.serve(async (req) => {
         .eq('id', id);
       if (uErr) {
         console.error('Update participant group failed:', id, uErr);
-        return json({ error: 'Failed to update groups', ok: false }, 500);
+        return json({ error: 'Failed to update participant group', detail: uErr.message, ok: false }, 500);
       }
     }
 
@@ -120,6 +130,7 @@ Deno.serve(async (req) => {
 
     if (tUpdateErr) {
       console.error('Update tournament number_of_groups failed:', tUpdateErr);
+      return json({ error: 'Failed to update tournament', detail: tUpdateErr.message, ok: false }, 500);
     }
 
     // Auto-close registration when at capacity
@@ -133,7 +144,8 @@ Deno.serve(async (req) => {
 
     return json({ ok: true, num_groups, count: participants.length });
   } catch (e) {
-    console.error(e);
-    return json({ error: String(e), ok: false }, 500);
+    const message = e instanceof Error ? e.message : String(e);
+    console.error('auto-split-groups error:', e);
+    return json({ error: message, ok: false }, 500);
   }
 });

@@ -367,7 +367,10 @@
 
     // Auto-split groups (server-side so updates succeed; client-side updates may be blocked by RLS)
     supabase.functions.invoke('auto-split-groups', { body: { tournament_id: formData.tournamentId } })
-      .then(({ error }) => { if (error) console.warn('Auto-split after signup:', error); })
+      .then(({ data, error }) => {
+        if (error) console.warn('Auto-split after signup:', error);
+        if (data && (data.error || data.detail)) console.warn('Auto-split response:', data.error || '', data.detail || '');
+      })
       .catch(err => console.warn('Auto-split after signup:', err));
 
     // Fetch Roblox display name + avatar only when this tournament's platform is Roblox
