@@ -203,7 +203,7 @@
   function showBracketStatus() {
     document.getElementById('bracketStatus').classList.remove('hidden');
     document.getElementById('bracketTournamentName').textContent = currentTournament.name_en;
-    document.getElementById('bracketStyle').textContent = currentTournament.bracket_style;
+    document.getElementById('bracketStyleDisplay').textContent = currentTournament.bracket_style;
     document.getElementById('bracketTotalParticipants').textContent = participants.length;
   }
 
