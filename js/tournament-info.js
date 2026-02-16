@@ -42,6 +42,11 @@
     }
   }
 
+  function stripHeartFromName(name) {
+    if (!name || typeof name !== 'string') return name;
+    return name.replace(/^\s*\[💘\]\s*/i, '').replace(/^\s*\[❤️?\]\s*/i, '').trim() || name;
+  }
+
   async function fetchTournamentDisplayInfo(tournamentTypeRaw) {
     if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) return null;
     try {
@@ -69,6 +74,8 @@
     if (isRivals) {
       rivalsContent.style.display = 'block';
       genericInfo.style.display = 'none';
+      const hero = document.getElementById('tournamentHero');
+      if (hero) hero.classList.add('hero-with-logo');
       const heroLogo = document.getElementById('tournamentHeroLogo');
       if (heroLogo) heroLogo.classList.remove('hidden');
       var displayName = 'RIVALS';
@@ -76,7 +83,7 @@
         var info = await fetchTournamentDisplayInfo(rawTournament);
         if (info) {
           var lang = window.i18n ? window.i18n.currentLang : 'fr';
-          displayName = lang === 'fr' ? (info.name_fr || info.name_en || 'RIVALS') : (info.name_en || info.name_fr || 'RIVALS');
+          displayName = stripHeartFromName(lang === 'fr' ? (info.name_fr || info.name_en || 'RIVALS') : (info.name_en || info.name_fr || 'RIVALS'));
         }
       }
       tournamentTitle.textContent = displayName;
@@ -93,6 +100,8 @@
 
     rivalsContent.style.display = 'none';
     genericInfo.style.display = 'block';
+    const hero = document.getElementById('tournamentHero');
+    if (hero) hero.classList.remove('hero-with-logo');
     const heroLogo = document.getElementById('tournamentHeroLogo');
     if (heroLogo) heroLogo.classList.add('hidden');
     const genericMessage = document.getElementById('genericMessage');
@@ -111,7 +120,7 @@
       var info = await fetchTournamentDisplayInfo(rawTournament);
       if (info) {
         var lang = window.i18n ? window.i18n.currentLang : 'fr';
-        name = lang === 'fr' ? (info.name_fr || info.name_en || rawTournament) : (info.name_en || info.name_fr || rawTournament);
+        name = stripHeartFromName(lang === 'fr' ? (info.name_fr || info.name_en || rawTournament) : (info.name_en || info.name_fr || rawTournament));
         status = info.status;
       }
       tournamentTitle.textContent = name;
