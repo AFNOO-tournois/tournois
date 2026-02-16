@@ -106,7 +106,7 @@
         }
       }
       tournamentTitle.textContent = displayName;
-      tournamentSubtitle.textContent = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.hideSubtitle') : 'Pour s\'amuser!';
+      tournamentSubtitle.textContent = '';
       document.title = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.pageTitle') + ' – ' + displayName : 'Infos tournoi – ' + displayName + ' - AFNOO';
       var status = await fetchTournamentStatus(rawTournament);
       showRegistrationClosedIfNeeded(status);
@@ -200,7 +200,7 @@
     const currentLang = window.i18n ? window.i18n.currentLang : 'fr';
     if (tournamentSubtitle) {
       if (isRivals) tournamentSubtitle.textContent = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.rivalsSubtitle') : '13–18 ans • FFA puis élimination directe';
-      else if (isHideAndSeek) tournamentSubtitle.textContent = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.hideSubtitle') : 'Pour s\'amuser!';
+      else if (isHideAndSeek) tournamentSubtitle.textContent = '';
     }
     if (isHideAndSeek && tournamentTitle) tournamentTitle.textContent = currentLang === 'fr' ? 'Cache-Cache' : 'Hide and Seek';
     if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
