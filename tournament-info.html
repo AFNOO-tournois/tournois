@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informations détaillées sur le tournoi - AFNOO">
+  <meta name="keywords" content="tournoi, AFNOO, règles, format, inscription">
+  <meta name="author" content="AFNOO">
+  
+  <title data-i18n="tournamentInfo.pageTitle">Infos tournoi - AFNOO</title>
+  
+  <link rel="icon" type="image/png" href="assets/images/logo-only.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  
+  <style>
+    .tournament-info-hero { background: linear-gradient(135deg, #28724f 0%, #1b4d3a 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center; }
+    .tournament-info-hero h1 { color: white; margin-bottom: 0.5rem; }
+    .tournament-info-hero .rivals-logo { max-height: 56px; width: auto; margin-bottom: 0.5rem; vertical-align: middle; }
+    .info-section { background: white; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+    .info-section h2 { color: #28724f; font-size: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #6ab04c; }
+    .info-section ul { margin: 0.5rem 0 0 1.25rem; }
+    .info-section li { margin-bottom: 0.5rem; }
+    .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .weapon-card { text-align: center; padding: 1rem; background: #f5f5f5; border-radius: 8px; }
+    .weapon-card img { max-width: 80px; height: auto; display: block; margin: 0 auto 0.5rem; }
+    .weapon-card strong { display: block; font-size: 0.9rem; color: #333; }
+    .btn-register-block { display: block; text-align: center; margin-top: 2rem; }
+    .link-external { color: #28724f; font-weight: 600; }
+    .link-external:hover { text-decoration: underline; }
+    #genericInfo { display: none; }
+    .registration-closed-banner { padding: 1rem 1.5rem; border-radius: 8px; text-align: center; font-weight: 600; margin-bottom: 1.5rem; }
+    .registration-closed-banner.at-capacity { background: linear-gradient(135deg, #e07c24 0%, #c2610a 100%); color: white; }
+    .registration-closed-banner.in-progress { background: linear-gradient(135deg, #40916c 0%, #2d6a4f 100%); color: white; }
+    #registrationClosedBanner { display: none; }
+  </style>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  
+  <header class="header" role="banner">
+    <div class="header-container">
+      <a href="index.html" class="logo-container" aria-label="AFNOO - Accueil">
+        <img src="assets/images/logo-only.png" alt="AFNOO logo" class="logo-img">
+        <div class="logo-text">
+          <h1 class="logo-title" data-i18n="header.title">Tournois et compétitions</h1>
+          <p class="logo-subtitle" data-i18n="header.subtitle">AFNOO</p>
+        </div>
+      </a>
+      <div class="header-right">
+        <nav role="navigation" aria-label="Navigation principale">
+          <ul class="nav-menu">
+            <li><a href="index.html" class="nav-link" data-i18n="header.home">Accueil</a></li>
+            <li><a href="signup.html" class="nav-link" data-i18n="header.register">S'inscrire</a></li>
+            <li><a href="bracket.html" class="nav-link" data-i18n="header.brackets">Tableaux</a></li>
+            <li><a href="results.html" class="nav-link" data-i18n="header.results">Résultats</a></li>
+          </ul>
+        </nav>
+        <div class="header-lang-wrap">
+          <button id="langToggle" class="lang-toggle" aria-label="Changer la langue">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container" style="max-width: 800px;">
+      
+      <!-- Hero: tournament name (filled by JS); RIVALS shows logo + title -->
+      <div id="tournamentHero" class="tournament-info-hero">
+        <img id="tournamentHeroLogo" src="assets/images/Rivals/Rivals-logo.png" alt="RIVALS" class="rivals-logo hidden">
+        <h1 id="tournamentTitle">—</h1>
+        <p id="tournamentSubtitle" style="opacity: 0.95; font-size: 1rem;"></p>
+      </div>
+
+      <!-- Registration closed (shown by JS when tournament is in-progress or at_capacity) -->
+      <div id="registrationClosedBanner" class="registration-closed-banner" role="status">
+        <span id="registrationClosedText" data-i18n="tournamentInfo.registrationClosed">Tournament full – Registration closed</span>
+      </div>
+
+      <!-- RIVALS (pvp) specific content -->
+      <div id="rivalsContent">
+        <div class="info-section">
+          <h2 data-i18n="tournamentInfo.format">Format</h2>
+          <p><strong data-i18n="tournamentInfo.phaseFFA">Phase FFA (Free-For-All)</strong></p>
+          <ul>
+            <li data-i18n="tournamentInfo.ffaPoints">Points: 1er = 100 pts, 2e = 90, 3e = 80, … jusqu’à 10e = 5 pts. Au-delà de la 10e place = 0 pt.</li>
+            <li data-i18n="tournamentInfo.ffaRounds">3 rondes FFA de 8 minutes chacune.</li>
+            <li data-i18n="tournamentInfo.ffaTop10">Les 10 premiers au classement FFA passent en phase à élimination directe.</li>
+            <li data-i18n="tournamentInfo.playIn">Phase de barrage (play-in): 4 joueurs s’affrontent en 1v1 pour une place en tableau.</li>
+          </ul>
+          <p><strong data-i18n="tournamentInfo.phaseElim">Phase à élimination directe</strong></p>
+          <ul>
+            <li data-i18n="tournamentInfo.elimDesc">Tableau 1v1 à élimination directe jusqu’à la finale et le match pour la 3e place.</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h2 data-i18n="tournamentInfo.capacity">Places et groupes</h2>
+          <p data-i18n="tournamentInfo.capacityText">Maximum 76 joueurs: 2 groupes de 38 + 4 spectateurs.</p>
+        </div>
+
+        <div class="info-section">
+          <h2 data-i18n="tournamentInfo.howToJoin">Comment participer</h2>
+          <p data-i18n="tournamentInfo.joinSteps">Inscrivez-vous sur ce site, puis rejoignez le serveur privé Roblox du tournoi le jour J avec le lien ci-dessous.</p>
+          <p style="margin-top: 1rem;">
+            <a href="https://www.roblox.com/share?code=fcedc0c5831df9498624f434dfd89792&type=Server" target="_blank" rel="noopener noreferrer" class="link-external">
+              Join the Tournaments Private RIVALS Server →
+            </a>
+          </p>
+        </div>
+
+        <div class="info-section">
+          <h2 data-i18n="tournamentInfo.rules">Règles du jeu</h2>
+          <p data-i18n="tournamentInfo.mapsRandom">Les cartes sont <strong>aléatoires</strong>.</p>
+          <p data-i18n="tournamentInfo.weaponsOnly">Seules les armes/équipements suivants sont autorisés. Toute autre arme ou équipement est interdite et peut entraîner une disqualification.</p>
+          <div class="weapon-grid">
+            <div class="weapon-card">
+              <img src="assets/images/Rivals/AssaultRifle.webp" alt="Assault Rifle" onerror="this.style.display='none'">
+              <strong data-i18n="tournamentInfo.primary">Arme principale</strong>
+              <span>Assault Rifle</span>
+            </div>
+            <div class="weapon-card">
+              <img src="assets/images/Rivals/Daggers.webp" alt="Daggers" onerror="this.style.display='none'">
+              <strong data-i18n="tournamentInfo.secondary">Secondaire</strong>
+              <span>Daggers</span>
+            </div>
+            <div class="weapon-card">
+              <img src="assets/images/Rivals/Knife.webp" alt="Knife" onerror="this.style.display='none'">
+              <strong data-i18n="tournamentInfo.melee">Mêlée</strong>
+              <span>Knife</span>
+            </div>
+            <div class="weapon-card">
+              <img src="assets/images/Rivals/Flashbang.webp" alt="FlashBang" onerror="this.style.display='none'">
+              <strong data-i18n="tournamentInfo.utility">Utility</strong>
+              <span>FlashBang</span>
+            </div>
+          </div>
+          <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <a href="https://robloxrivals.fandom.com/wiki/Assault_Rifle" target="_blank" rel="noopener noreferrer" class="link-external">RIVALS Wiki – Assault Rifle</a>
+          </p>
+        </div>
+
+        <div class="info-section">
+          <h2 data-i18n="tournamentInfo.practice">S’entraîner</h2>
+          <p data-i18n="tournamentInfo.practiceText">Jouez à RIVALS sur Roblox pour vous familiariser avec le jeu.</p>
+          <p style="margin-top: 0.75rem;">
+            <a href="https://www.roblox.com/games/17625359962/RIVALS" target="_blank" rel="noopener noreferrer" class="link-external">
+              [💘] RIVALS – Roblox
+            </a>
+          </p>
+        </div>
+
+        <div class="btn-register-block">
+          <a href="signup.html?tournament=pvp" class="btn btn-primary" style="font-size: 1.125rem; padding: 1rem 2rem;">
+            <span data-i18n="tournamentInfo.registerForTournament">S’inscrire à ce tournoi</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Generic fallback for other tournaments -->
+      <div id="genericInfo" class="info-section">
+        <p id="genericMessage"></p>
+        <p style="margin-top: 1rem;">
+          <a id="genericSignupLink" href="signup.html" class="btn btn-primary" data-i18n="landing.registerNow">S'inscrire maintenant</a>
+        </p>
+      </div>
+
+      <p style="text-align: center; margin-top: 2rem;">
+        <a href="index.html" class="btn btn-outline" data-i18n="tournamentInfo.backToHome">Retour à l’accueil</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <img src="assets/images/logo-only.png" alt="AFNOO" class="footer-logo">
+      <p class="footer-org" data-i18n="landing.footerOrg">Organisé par l'AFNOO</p>
+      <nav aria-label="Navigation du pied de page">
+        <div class="footer-links">
+          <a href="https://www.afnoo.org/" target="_blank" rel="noopener noreferrer" class="footer-link">AFNOO</a>
+        </div>
+      </nav>
+      <p class="footer-compliance" data-i18n="landing.footerCompliance">Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.</p>
+      <p class="footer-copyright" data-i18n="landing.footerCopyright">© AFNOO, 2026 – Tous droits réservés.</p>
+      <div class="footer-funding">
+        <p class="footer-funding-label" data-i18n="landing.footerFunding">Financé par le gouvernement de l'Ontario</p>
+        <img src="assets/images/ontario-full.png" alt="Gouvernement de l'Ontario" class="footer-funding-logo">
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/language.js"></script>
+  <script src="js/tournament-info.js"></script>
+</body>
+</html>

@@ -34,6 +34,7 @@ const translations = {
       tournament2Format: "Chronométré / Points",
       
       // Call to Action
+      moreInfo: "Plus d'infos",
       registerNow: "S'inscrire maintenant",
       signupClosed: "Inscriptions fermées",
       tournamentInProgress: "Tournoi en cours",
@@ -90,6 +91,39 @@ const translations = {
       footerCompliance: "Ce site est conforme aux Règles pour l'accessibilité des contenus Web (WCAG) 2.0.",
       footerCopyright: "© AFNOO, 2026 – Tous droits réservés.",
       footerFunding: "Financé par le gouvernement de l'Ontario"
+    },
+
+    // Tournament Info Page (More Info)
+    tournamentInfo: {
+      pageTitle: "Infos tournoi - AFNOO",
+      noTournament: "Tournoi",
+      selectFromHome: "Choisissez un tournoi depuis l'accueil pour voir ses infos.",
+      moreInfoSoon: "Plus d'infos à venir pour ce tournoi.",
+      rivalsSubtitle: "13–18 ans • FFA puis élimination directe",
+      format: "Format",
+      phaseFFA: "Phase FFA (Free-For-All)",
+      ffaPoints: "Points: 1er = 100 pts, 2e = 90, 3e = 80, … jusqu'à 10e = 5 pts. Au-delà de la 10e place = 0 pt.",
+      ffaRounds: "3 rondes FFA de 8 minutes chacune.",
+      ffaTop10: "Les 10 premiers au classement FFA passent en phase à élimination directe.",
+      playIn: "Phase de barrage (play-in): 4 joueurs s'affrontent en 1v1 pour une place en tableau.",
+      phaseElim: "Phase à élimination directe",
+      elimDesc: "Tableau 1v1 à élimination directe jusqu'à la finale et le match pour la 3e place.",
+      capacity: "Places et groupes",
+      capacityText: "Maximum 76 joueurs: 2 groupes de 38 + 4 spectateurs.",
+      howToJoin: "Comment participer",
+      joinSteps: "Inscrivez-vous sur ce site, puis rejoignez le serveur privé Roblox du tournoi le jour J avec le lien ci-dessous.",
+      rules: "Règles du jeu",
+      mapsRandom: "Les cartes sont aléatoires.",
+      weaponsOnly: "Seules les armes/équipements suivants sont autorisés. Toute autre arme ou équipement est interdite et peut entraîner une disqualification.",
+      primary: "Arme principale",
+      secondary: "Secondaire",
+      melee: "Mêlée",
+      utility: "Utility",
+      practice: "S'entraîner",
+      practiceText: "Jouez à RIVALS sur Roblox pour vous familiariser avec le jeu.",
+      registerForTournament: "S'inscrire à ce tournoi",
+      registrationClosed: "Tournoi complet – Inscriptions fermées",
+      backToHome: "Retour à l'accueil"
     },
 
     // Signup Form
@@ -341,6 +375,7 @@ const translations = {
       tournament2Format: "Timed / Points",
       
       // Call to Action
+      moreInfo: "More Info",
       registerNow: "Register Now",
       signupClosed: "Signups Closed",
       tournamentInProgress: "Tournament in Progress",
@@ -397,6 +432,39 @@ const translations = {
       footerCompliance: "This site is compliant with Web Content Accessibility Guidelines (WCAG) 2.0.",
       footerCopyright: "© AFNOO, 2026 – All rights reserved.",
       footerFunding: "Funded by the Government of Ontario"
+    },
+
+    // Tournament Info Page (More Info)
+    tournamentInfo: {
+      pageTitle: "Tournament Info - AFNOO",
+      noTournament: "Tournament",
+      selectFromHome: "Choose a tournament from the home page to see its details.",
+      moreInfoSoon: "More info coming soon for this tournament.",
+      rivalsSubtitle: "Ages 13–18 • FFA then single elimination",
+      format: "Format",
+      phaseFFA: "FFA (Free-For-All) phase",
+      ffaPoints: "Points: 1st = 100 pts, 2nd = 90, 3rd = 80, … down to 10th = 5 pts. Below 10th = 0 pts.",
+      ffaRounds: "3 FFA rounds, 8 minutes each.",
+      ffaTop10: "Top 10 from FFA standings advance to the elimination phase.",
+      playIn: "Play-in: 4 players compete in 1v1 for one spot in the bracket.",
+      phaseElim: "Elimination phase",
+      elimDesc: "Single-elimination 1v1 bracket until the 3rd-place match and finals.",
+      capacity: "Capacity and groups",
+      capacityText: "Maximum 76 players: 2 groups of 38 + 4 spectators.",
+      howToJoin: "How to join",
+      joinSteps: "Register on this site, then join the tournament's private Roblox server on the day using the link below.",
+      rules: "Game rules",
+      mapsRandom: "Maps are random.",
+      weaponsOnly: "Only the following weapons/equipment are allowed. Using anything else may result in disqualification.",
+      primary: "Primary",
+      secondary: "Secondary",
+      melee: "Melee",
+      utility: "Utility",
+      practice: "Practice",
+      practiceText: "Play RIVALS on Roblox to get familiar with the game.",
+      registerForTournament: "Register for this tournament",
+      registrationClosed: "Tournament full – Registration closed",
+      backToHome: "Back to home"
     },
 
     // Signup Form

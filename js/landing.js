@@ -163,6 +163,7 @@
               <span data-i18n="landing.signupClosed">Inscriptions fermées</span>
             </p>
           </div>
+          <a href="tournament-info.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn btn-outline" style="width: 100%; margin-top: 0.75rem;"><span data-i18n="landing.moreInfo">Plus d'infos</span></a>
         ` : tournament.status === 'at_capacity' ? `
           <div style="margin-top: 1rem; padding: 1rem; background: linear-gradient(135deg, #e07c24 0%, #c2610a 100%); border-radius: 8px; text-align: center;">
             <p style="color: white; font-weight: 700; font-size: 1.125rem; margin: 0;">
@@ -172,8 +173,9 @@
               <span data-i18n="landing.signupClosed">Inscriptions fermées</span>
             </p>
           </div>
+          <a href="tournament-info.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn btn-outline" style="width: 100%; margin-top: 0.75rem;"><span data-i18n="landing.moreInfo">Plus d'infos</span></a>
         ` : `
-          <a href="signup.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn ${index % 2 === 0 ? 'btn-primary' : 'btn-secondary'}" style="width: 100%; margin-top: 1rem;"><span data-i18n="landing.registerNow">S'inscrire maintenant</span></a>
+          <a href="tournament-info.html?tournament=${encodeURIComponent(tournament.tournament_type)}" class="btn ${index % 2 === 0 ? 'btn-primary' : 'btn-secondary'}" style="width: 100%; margin-top: 1rem;"><span data-i18n="landing.moreInfo">Plus d'infos</span></a>
         `}
       </article>
     `;
