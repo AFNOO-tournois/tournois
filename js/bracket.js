@@ -604,14 +604,17 @@
     if (!currentParticipants || currentParticipants.length === 0) return;
     const effectiveNum = Math.max(1, ...currentParticipants.map(p => (p.group_number != null ? p.group_number : 1)));
     if (effectiveNum > 1) setupGroupFilter(effectiveNum); else hideGroupFilter();
-    const participantsSection = document.getElementById('participantsSection');
-    const leaderboardSection = document.getElementById('leaderboardSection');
-    if (participantsSection && !participantsSection.classList.contains('hidden')) {
-      displayParticipants(currentParticipants);
+    // Use same logic as loadTournamentData/refreshViewAfterGroupChange: scoreboard with matches = leaderboard in participantsList; else participant cards (don't infer from section visibility or we overwrite leaderboard on language change)
+    const bracketStyle = currentTournamentObj && (currentTournamentObj.bracket_style || 'scoreboard').toLowerCase();
+    if (bracketStyle === 'no-bracket') {
+      displayParticipants(getFilteredParticipants());
+      return;
     }
-    if (leaderboardSection && !leaderboardSection.classList.contains('hidden') && currentMatches && currentMatches.length > 0) {
+    if (currentMatches && currentMatches.length > 0) {
       setupRoundFilter(currentMatches);
       displayLeaderboard(getFilteredParticipants(), currentMatches, currentRoundFilter);
+    } else {
+      displayParticipants(getFilteredParticipants());
     }
   }
 
