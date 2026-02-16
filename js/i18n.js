@@ -292,6 +292,8 @@ const translations = {
       fullStandings: "Classement complet",
       
       // No Results State
+      noTournamentsTitle: "Aucun tournoi avec des résultats",
+      noTournamentsMessage: "Aucun tournoi terminé n'a de résultats pour le moment. Revenez plus tard ou consultez les tableaux pour suivre les tournois en cours.",
       upcomingTitle: "Tournoi en cours ou à venir",
       upcomingMessage: "Les résultats seront disponibles une fois le tournoi terminé.",
       
@@ -647,6 +649,8 @@ const translations = {
       fullStandings: "Full Standings",
       
       // No Results State
+      noTournamentsTitle: "No tournaments with results",
+      noTournamentsMessage: "No completed tournaments have results yet. Check back later or view the brackets to follow tournaments in progress.",
       upcomingTitle: "Tournament in progress or upcoming",
       upcomingMessage: "Results will be available once the tournament is complete.",
       

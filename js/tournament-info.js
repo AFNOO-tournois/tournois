@@ -76,7 +76,7 @@
     const rawTournament = (params.get('tournament') || '').trim();
     const tournamentTypeLower = rawTournament.toLowerCase();
     const isRivals = tournamentTypeLower === 'pvp' || tournamentTypeLower.startsWith('rivals');
-    const isHideAndSeek = tournamentTypeLower === 'hide-and-seek' || tournamentTypeLower.startsWith('hide');
+    const isHideAndSeek = tournamentTypeLower === 'hide-and-seek' || tournamentTypeLower.startsWith('hide') || tournamentTypeLower === 'cache-cache';
     const rivalsContent = document.getElementById('rivalsContent');
     const hideContent = document.getElementById('hideContent');
     const genericInfo = document.getElementById('genericInfo');
@@ -95,12 +95,12 @@
         heroLogo.alt = 'Hide and Seek';
         heroLogo.classList.remove('hidden');
       }
-      var displayName = 'Hide and Seek';
+      var lang = window.i18n ? window.i18n.currentLang : 'fr';
+      var displayName = lang === 'fr' ? 'Cache-Cache' : 'Hide and Seek';
       if (rawTournament && window.supabaseConfig && window.supabaseConfig.isSupabaseConfigured()) {
         var info = await fetchTournamentDisplayInfo(rawTournament);
         if (info) {
-          var lang = window.i18n ? window.i18n.currentLang : 'fr';
-          displayName = stripHeartFromName(lang === 'fr' ? (info.name_fr || info.name_en || 'Hide and Seek') : (info.name_en || info.name_fr || 'Hide and Seek'));
+          displayName = stripHeartFromName(lang === 'fr' ? (info.name_fr || info.name_en || 'Cache-Cache') : (info.name_en || info.name_fr || 'Hide and Seek'));
         }
       }
       tournamentTitle.textContent = displayName;
@@ -189,12 +189,15 @@
     const params = new URLSearchParams(window.location.search);
     const tournamentTypeLower = (params.get('tournament') || '').trim().toLowerCase();
     const isRivals = tournamentTypeLower === 'pvp' || tournamentTypeLower.startsWith('rivals');
-    const isHideAndSeek = tournamentTypeLower === 'hide-and-seek' || tournamentTypeLower.startsWith('hide');
+    const isHideAndSeek = tournamentTypeLower === 'hide-and-seek' || tournamentTypeLower.startsWith('hide') || tournamentTypeLower === 'cache-cache';
     const tournamentSubtitle = document.getElementById('tournamentSubtitle');
+    const tournamentTitle = document.getElementById('tournamentTitle');
+    const currentLang = window.i18n ? window.i18n.currentLang : 'fr';
     if (tournamentSubtitle) {
       if (isRivals) tournamentSubtitle.textContent = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.rivalsSubtitle') : '13–18 ans • FFA puis élimination directe';
       else if (isHideAndSeek) tournamentSubtitle.textContent = (window.i18n && window.i18n.t) ? window.i18n.t('tournamentInfo.hideSubtitle') : 'Pour s\'amuser!';
     }
+    if (isHideAndSeek && tournamentTitle) tournamentTitle.textContent = currentLang === 'fr' ? 'Cache-Cache' : 'Hide and Seek';
     if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
   });
 })();

@@ -64,22 +64,29 @@
         <h1 data-i18n="results.title">Résultats du tournoi</h1>
       </div>
 
-      <!-- Tournament Selection -->
-      <p class="tournament-select-label" style="text-align: center; color: #555; font-size: 1rem; margin-bottom: 0.75rem;" data-i18n="common.selectTournamentResults">Select which tournament you want to see results for.</p>
-      <div id="tournamentTabs" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap;">
-        <!-- Tournament tabs will be loaded dynamically -->
-        <div style="text-align: center; padding: 1rem; color: #666;">
-          <span data-i18n="common.loading">Chargement...</span>
+      <!-- Tournament Selection (hidden until we have completed tournaments) -->
+      <div id="tournamentSelectionBlock" class="hidden">
+        <p class="tournament-select-label" style="text-align: center; color: #555; font-size: 1rem; margin-bottom: 0.75rem;" data-i18n="common.selectTournamentResults">Select which tournament you want to see results for.</p>
+        <div id="tournamentTabs" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap;">
+          <!-- Tournament tabs will be loaded dynamically -->
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div id="loadingState" style="text-align: center; padding: 3rem;">
+      <!-- Loading State (only shown when loading results for a selected tournament) -->
+      <div id="loadingState" class="hidden" style="text-align: center; padding: 3rem;">
         <div class="loading" style="margin: 0 auto;"></div>
         <p style="margin-top: 1rem; color: #666;" data-i18n="common.loading">Chargement...</p>
       </div>
 
-      <!-- No Results State -->
+      <!-- No completed tournaments -->
+      <div id="noTournamentsState" class="hidden" style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 12px;">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">🏆</p>
+        <h3 data-i18n="results.noTournamentsTitle">Aucun tournoi avec des résultats</h3>
+        <p style="color: #666; margin-bottom: 2rem;" data-i18n="results.noTournamentsMessage">Aucun tournoi terminé n'a de résultats pour le moment.</p>
+        <a href="bracket.html" class="btn btn-primary" data-i18n="header.brackets">Tableaux</a>
+      </div>
+
+      <!-- No Results State (selected tournament has no results yet) -->
       <div id="noResultsState" class="hidden" style="text-align: center; padding: 3rem; background: #f5f5f5; border-radius: 12px;">
         <p style="font-size: 3rem; margin-bottom: 1rem;">🏆</p>
         <h3 data-i18n="results.upcomingTitle">Tournoi en cours ou à venir</h3>
@@ -305,9 +312,23 @@
       }
     }
     
+    function showNoTournaments() {
+      document.getElementById('tournamentSelectionBlock').classList.add('hidden');
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('noResultsState').classList.add('hidden');
+      document.getElementById('noTournamentsState').classList.remove('hidden');
+      if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
+    }
+    
     async function loadTournaments() {
+      const selectionBlock = document.getElementById('tournamentSelectionBlock');
+      const loadingState = document.getElementById('loadingState');
+      const noTournamentsState = document.getElementById('noTournamentsState');
+      
       if (!window.supabaseConfig || !window.supabaseConfig.isSupabaseConfigured()) {
         console.warn('Supabase not configured');
+        tournaments = [];
+        showNoTournaments();
         return;
       }
       
@@ -322,21 +343,26 @@
         
         if (error) {
           console.error('Error loading tournaments:', error);
+          tournaments = [];
+          showNoTournaments();
           return;
         }
         
         tournaments = data || [];
         
         if (tournaments.length > 0) {
+          noTournamentsState.classList.add('hidden');
+          selectionBlock.classList.remove('hidden');
           renderTournamentTabs();
           currentTournament = tournaments[0].tournament_type;
           loadResults(currentTournament);
         } else {
-          document.getElementById('loadingState').classList.add('hidden');
-          showNoResults();
+          showNoTournaments();
         }
       } catch (error) {
         console.error('Error:', error);
+        tournaments = [];
+        showNoTournaments();
       }
     }
     
@@ -542,6 +568,7 @@
 
     function showNoResults() {
       document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('noTournamentsState').classList.add('hidden');
       document.getElementById('noResultsState').classList.remove('hidden');
     }
 
