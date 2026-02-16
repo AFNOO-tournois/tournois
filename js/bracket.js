@@ -724,23 +724,24 @@
     // Use tournament group count so column layout stays consistent (no shift when switching Group 1 / Group 2)
     const showGroupColumn = currentTournamentObj && (currentTournamentObj.number_of_groups || 0) > 1;
     const groupHeaderText = (window.i18n && window.i18n.t) ? window.i18n.t('bracket.group') : 'Group';
-    // Generate leaderboard table
+    // Generate leaderboard table. Wrap in single container so tournament-grid doesn't split note + table into two columns (which squeezes the table when Group 1/2 is selected).
     const participantsList = document.getElementById('participantsList');
     participantsList.innerHTML = `
-      ${rankNoteText ? `<p class="leaderboard-group-note" style="margin: 0 0 0.75rem 0; font-size: 0.875rem; color: #666;">${escapeHtml(rankNoteText)}</p>` : ''}
-      <div class="table-container" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow-x: auto; overflow-y: visible;">
-        <table class="table leaderboard-table" style="margin: 0; min-width: 620px;">
-          <thead>
-            <tr>
-              <th style="width: 100px; min-width: 100px; text-align: center;">${escapeHtml(rankHeaderText)}</th>
-              <th><span data-i18n="bracket.participant">Participant</span></th>
-              ${showGroupColumn ? `<th style="width: 90px; min-width: 90px; text-align: center;">${escapeHtml(groupHeaderText)}</th>` : ''}
-              <th style="width: 120px; text-align: center;"><span data-i18n="bracket.rounds">Rondes</span></th>
-              <th style="width: 120px; text-align: center;"><span data-i18n="bracket.points">Points</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            ${leaderboard.map((player, index) => {
+      <div class="leaderboard-wrapper" style="grid-column: 1 / -1; min-width: 0;">
+        ${rankNoteText ? `<p class="leaderboard-group-note" style="margin: 0 0 0.75rem 0; font-size: 0.875rem; color: #666;">${escapeHtml(rankNoteText)}</p>` : ''}
+        <div class="table-container" style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow-x: auto; overflow-y: visible;">
+          <table class="table leaderboard-table" style="margin: 0; min-width: 620px;">
+            <thead>
+              <tr>
+                <th style="width: 100px; min-width: 100px; text-align: center;">${escapeHtml(rankHeaderText)}</th>
+                <th><span data-i18n="bracket.participant">Participant</span></th>
+                ${showGroupColumn ? `<th style="width: 90px; min-width: 90px; text-align: center;">${escapeHtml(groupHeaderText)}</th>` : ''}
+                <th style="width: 120px; text-align: center;"><span data-i18n="bracket.rounds">Rondes</span></th>
+                <th style="width: 120px; text-align: center;"><span data-i18n="bracket.points">Points</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leaderboard.map((player, index) => {
               const medalEmoji = player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : '';
               const rankNum = player.rank;
               const rankLabel = player.isTied ? `T${rankNum}` : String(rankNum);
@@ -767,8 +768,9 @@
                 </tr>
               `;
             }).join('')}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     `;
     
