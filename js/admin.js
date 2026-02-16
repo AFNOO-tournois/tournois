@@ -4,9 +4,9 @@
 (function() {
   'use strict';
 
-  // ADMIN PASSWORD - Keep this secure!
-  // ⚠️ This is visible in public GitHub - change regularly
-  const ADMIN_PASSWORD = 'AFNOO2026!Secure'; // TODO: Change and use proper auth in production
+
+ 
+  const ADMIN_PASSWORD = 'AFNOO2026!Secure'; 
   
   // Top 10 get points 100 down to 10; below top 10 get 0
   const POINT_SCALE = {
