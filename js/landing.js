@@ -95,12 +95,18 @@
     const description = lang === 'fr' ? tournament.description_fr : tournament.description_en;
     const format = lang === 'fr' ? tournament.format_fr : tournament.format_en;
     
+    const isRivals = (tournament.tournament_type || '').toLowerCase() === 'pvp' || (name || '').toLowerCase().includes('rivals');
+    
     const dateObj = tournament.tournament_date ? new Date(tournament.tournament_date) : null;
     const dateDisplay = dateObj ? formatDate(dateObj, lang) : (lang === 'fr' ? 'À déterminer' : 'TBD');
     
     return `
       <article class="tournament-card">
-        <h3 class="tournament-card-title">${escapeHtml(name)}</h3>
+        ${isRivals ? `
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+          <img src="assets/images/Rivals/Rivals-Logo.png" alt="RIVALS" style="max-height: 56px; width: auto; display: block; margin: 0 auto;">
+        </div>
+        ` : `<h3 class="tournament-card-title">${escapeHtml(name)}</h3>`}
         ${subtitle ? `<p class="tournament-card-subtitle">${escapeHtml(subtitle)}</p>` : ''}
         ${description ? `<p class="tournament-card-desc">${escapeHtml(description)}</p>` : ''}
         
