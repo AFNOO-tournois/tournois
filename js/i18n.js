@@ -42,7 +42,7 @@ const translations = {
       tournamentCompleted: "Tournoi terminé",
       viewResults: "Voir les résultats",
       viewBrackets: "Voir les tableaux",
-      joinTeams: "Rejoindre la réunion Teams",
+      joinTeams: "Rejoindre la réunion Google Meet",
       scanQR: "Scannez le code QR pour vous inscrire",
       
       // Info Sections
@@ -127,6 +127,7 @@ const translations = {
       joinSteps: "Inscrivez-vous sur ce site, puis rejoignez le serveur privé Roblox du tournoi le jour J avec le lien ci-dessous.",
       joinServerLink: "Rejoindre le serveur privé RIVALS du tournoi →",
       orScanQR: "Ou scannez ce code QR avec l'appareil que vous utiliserez pendant le tournoi :",
+      joinMeetLink: "Rejoindre la réunion Google Meet pour les annonces vocales (jour du tournoi) →",
       rules: "Règles du jeu",
       mapsRandom: "Les cartes sont votées par les joueurs avant le début du jeu.",
       weaponsOnly: "Seules les armes/équipements suivants sont autorisés. Toute autre arme ou équipement est interdite et peut entraîner une disqualification.",
@@ -189,7 +190,7 @@ const translations = {
       successMessage: "Bienvenue au tournoi!",
       registrationNumber: "Numéro d'inscription",
       nextSteps: "Prochaines étapes",
-      step1: "Rejoignez la réunion Teams le jour du tournoi",
+      step1: "Rejoignez la réunion Google Meet le jour du tournoi – le lien est sur la page « Plus d'infos »",
       step2: "Consultez les tableaux pour voir votre position",
       step3: "Soyez prêt 15 minutes avant le début",
       shareTitle: "Partagez avec vos amis",
@@ -294,8 +295,8 @@ const translations = {
       liveUpdates: "Mises à jour en direct",
       refreshing: "Actualisation...",
       
-      // Teams Link
-      teamsButton: "Rejoindre Teams",
+      // Google Meet Link
+      teamsButton: "Rejoindre Google Meet",
       teamsInfo: "Cliquez ici pour rejoindre l'annonce vocale"
     },
 
@@ -413,7 +414,7 @@ const translations = {
       tournamentCompleted: "Tournament Completed",
       viewResults: "View Results",
       viewBrackets: "View Brackets",
-      joinTeams: "Join Teams Meeting",
+      joinTeams: "Join Google Meet",
       scanQR: "Scan QR code to register",
       
       // Info Sections
@@ -498,6 +499,7 @@ const translations = {
       joinSteps: "Register on this site, then join the tournament's private Roblox server on the day using the link below.",
       joinServerLink: "Join the Tournaments Private RIVALS Server →",
       orScanQR: "Or scan this QR code using the device you want to use during the tournament:",
+      joinMeetLink: "Join the Google Meet for voice announcements (tournament day) →",
       rules: "Game rules",
       mapsRandom: "Maps are voted on by players before game start.",
       weaponsOnly: "Only the following weapons/equipment are allowed. Using anything else may result in disqualification.",
@@ -560,7 +562,7 @@ const translations = {
       successMessage: "Welcome to the tournament!",
       registrationNumber: "Registration Number",
       nextSteps: "Next Steps",
-      step1: "Join the Teams meeting on tournament day",
+      step1: "Join the Google Meet on tournament day – the link is on the More info page",
       step2: "Check the brackets to see your position",
       step3: "Be ready 15 minutes before start time",
       shareTitle: "Share with friends",
@@ -665,8 +667,8 @@ const translations = {
       liveUpdates: "Live updates",
       refreshing: "Refreshing...",
       
-      // Teams Link
-      teamsButton: "Join Teams",
+      // Google Meet Link
+      teamsButton: "Join Google Meet",
       teamsInfo: "Click here to join the voice announcement"
     },
 
