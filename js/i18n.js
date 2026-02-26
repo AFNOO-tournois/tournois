@@ -94,6 +94,15 @@ const translations = {
       footerFunding: "Financé par le gouvernement de l'Ontario"
     },
 
+    // Contact Page
+    contact: {
+      pageTitle: "Nous joindre - AFNOO",
+      title: "Nous joindre",
+      messagePrefix: "Pour toute question, veuillez nous écrire à",
+      messageSuffix: ".",
+      footerLink: "Nous joindre"
+    },
+
     // Tournament Info Page (More Info)
     tournamentInfo: {
       pageTitle: "Infos tournoi - AFNOO",
@@ -472,6 +481,15 @@ const translations = {
       footerCompliance: "This site is compliant with Web Content Accessibility Guidelines (WCAG) 2.0.",
       footerCopyright: "© AFNOO, 2026 – All rights reserved.",
       footerFunding: "Funded by the Government of Ontario"
+    },
+
+    // Contact Page
+    contact: {
+      pageTitle: "Contact Us - AFNOO",
+      title: "Contact Us",
+      messagePrefix: "For any questions, please email us at",
+      messageSuffix: ".",
+      footerLink: "Contact Us"
     },
 
     // Tournament Info Page (More Info)
