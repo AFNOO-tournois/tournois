@@ -214,7 +214,8 @@
           id: 'DEMO-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
           username: formData.robloxUsername,
           tournament: formData.tournament,
-          gamePlatform: (formData.gamePlatform || '').toLowerCase()
+          gamePlatform: (formData.gamePlatform || '').toLowerCase(),
+          emailProvided: !!(formData.email && formData.email.trim())
         });
         return;
       }
@@ -394,7 +395,8 @@
       id: data.id.substring(0, 8).toUpperCase(),
       username: formData.robloxUsername,
       tournament: formData.tournament,
-      gamePlatform: (formData.gamePlatform || '').toLowerCase()
+      gamePlatform: (formData.gamePlatform || '').toLowerCase(),
+      emailProvided: !!(formData.email && formData.email.trim())
     };
   }
 
@@ -420,6 +422,24 @@
     // Populate success message data
     document.getElementById('registrationId').textContent = '#' + data.id;
     document.getElementById('confirmedUsername').textContent = data.username;
+    
+    // Show email-provided or no-email block
+    const emailProvidedBlock = document.getElementById('emailProvidedBlock');
+    const noEmailBlock = document.getElementById('noEmailBlock');
+    const moreInfoLink = document.getElementById('moreInfoLink');
+    if (emailProvidedBlock && noEmailBlock) {
+      if (data.emailProvided) {
+        emailProvidedBlock.classList.remove('hidden');
+        noEmailBlock.classList.add('hidden');
+      } else {
+        emailProvidedBlock.classList.add('hidden');
+        noEmailBlock.classList.remove('hidden');
+        if (moreInfoLink && data.tournament) {
+          moreInfoLink.href = 'tournament-info.html?tournament=' + encodeURIComponent(data.tournament);
+        }
+      }
+    }
+    if (window.i18n && window.i18n.updateAllText) window.i18n.updateAllText();
     
     // Show Roblox download link when tournament platform is Roblox (empty defaults to Roblox)
     const robloxBlock = document.getElementById('robloxDownloadBlock');
